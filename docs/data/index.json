@@ -1,1 +1,35 @@
-
+{
+    "team": [
+        {
+            "name": "MANILGAMA N.C.",
+            "email": "e21254@eng.pdn.ac.lk",
+            "eNumber": "E/21/254"
+        },  
+        {
+            "name": "K.A.P.M.PERERA",
+            "email": "e21292@eng.pdn.ac.lk",
+            "eNumber": "E/21/292"
+        },
+        {
+            "name": "RUKSHAN A.D.",
+            "email": "e21339@eng.pdn.ac.lk",
+            "eNumber": "E/21/339"
+        },
+        {
+            "name": "SURIYAPPERUMA H.D.",
+            "email": "e21453@eng.pdn.ac.lk",
+            "eNumber": "E/21/453"
+        }
+    ],
+    "supervisors": [
+        {
+            "name": "Ms. Yasodha Vimukthi",
+            "email": "yasodhav@eng.pdn.ac.lk"
+        },
+        {
+            "name": "Dr. Isuru Nawinne",
+            "email": "isurunawinne@eng.pdn.ac.lk"
+        }
+    ],
+    "tags": ["Web", "Embedded Systems"]
+}
