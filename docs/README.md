@@ -14,7 +14,7 @@ title: Smart Metrolac
 ---
 
 ## Team
--  e21453, Hiyumi Suriyapperuma, [e21453@eng.pdn.ac.lk](mailto:name@email.com)
+-  e21453, Hiyumi Dilmani, [e21453@eng.pdn.ac.lk](mailto:name@email.com)
 -  e21254, Nandun Manilgama, [e21254@eng.pdn.ac.lk](mailto:name@email.com)
 -  e21292, Manodya Perera, [e21292@emg.pdn.ac.lk](mailto:name@email.com)
 -  e21339, Dananja Rukshan, [e21339@emg.pdn.ac.lk](mailto:name@email.com)
