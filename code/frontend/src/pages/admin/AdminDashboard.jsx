@@ -4,14 +4,49 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loadDashboardData } from '../../features/admin/adminSlice';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
+const getSeverityView = (severity) => {
+  const normalized = String(severity || '').trim().toLowerCase();
+
+  if (normalized === 'critical') {
+    return {
+      label: 'Critical',
+      className: 'bg-red-200 text-red-800',
+    };
+  }
+
+  if (normalized === 'high') {
+    return {
+      label: 'High',
+      className: 'bg-orange-200 text-orange-800',
+    };
+  }
+
+  if (normalized === 'warning' || normalized === 'medium') {
+    return {
+      label: 'Warning',
+      className: 'bg-yellow-200 text-yellow-800',
+    };
+  }
+
+  return {
+    label: severity || 'Info',
+    className: 'bg-slate-200 text-slate-700',
+  };
+};
+
 const AdminDashboard = () => {
   const dispatch = useDispatch();
   const { kpis, chartData, alerts, isLoading } = useSelector((state) => state.admin);
   const { currentUser } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    // Trigger the mock API call when the component loads
     dispatch(loadDashboardData());
+
+    const refreshTimer = setInterval(() => {
+      dispatch(loadDashboardData());
+    }, 15000);
+
+    return () => clearInterval(refreshTimer);
   }, [dispatch]);
 
   if (isLoading) {
@@ -98,6 +133,9 @@ const AdminDashboard = () => {
             </h3>
             <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
               {alerts.map((alert) => (
+                (() => {
+                  const severityView = getSeverityView(alert.Severity);
+                  return (
                 <div 
                   key={alert.Alert_ID} 
                   className={`p-4 rounded-lg border-l-4 shadow-sm ${
@@ -110,12 +148,8 @@ const AdminDashboard = () => {
                     <span className={`text-sm font-bold ${!alert.Resolved ? 'text-red-700' : 'text-slate-600'}`}>
                       {alert.Alert_Type}
                     </span>
-                    <span className={`text-xs px-2 py-0.5 rounded uppercase font-bold tracking-wide ${
-                      alert.Severity === 'Critical' ? 'bg-red-200 text-red-800' : 
-                      alert.Severity === 'High' ? 'bg-orange-200 text-orange-800' : 
-                      'bg-yellow-200 text-yellow-800'
-                    }`}>
-                      {alert.Severity}
+                    <span className={`text-xs px-2 py-0.5 rounded uppercase font-bold tracking-wide ${severityView.className}`}>
+                      {severityView.label}
                     </span>
                   </div>
                   <p className={`text-sm ${!alert.Resolved ? 'text-red-900' : 'text-slate-500'}`}>
@@ -125,6 +159,8 @@ const AdminDashboard = () => {
                     Status: {alert.Resolved ? <span className="text-emerald-600">Resolved</span> : <span className="text-red-600">Requires Attention</span>}
                   </div>
                 </div>
+                  );
+                })()
               ))}
             </div>
           </div>
