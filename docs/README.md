@@ -3,20 +3,21 @@ layout: home
 permalink: index.html
 
 # Please update this with your repository name and project title
-repository-name: eYY-3yp-project-template
-title: Project Template
+repository-name: e21-3yp-Smart-Metrolac
+title: Smart Metrolac
 ---
 
 [comment]: # "This is the standard layout for the project, but you can clean this and use your own template"
 
-# Project Title
+# Smart Metrolac
 
 ---
 
 ## Team
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
+-  e21453, Hiyumi Suriyapperuma, [e21453@eng.pdn.ac.lk](mailto:name@email.com)
+-  e21254, Nandun Manilgama, [e21254@eng.pdn.ac.lk](mailto:name@email.com)
+-  e21292, Manodya Perera, [e21292@emg.pdn.ac.lk](mailto:name@email.com)
+-  e21339, Dananja Rukshan, [e21339@emg.pdn.ac.lk](mailto:name@email.com)
 
 <!-- Image (photo/drawing of the final hardware) should be here -->
 
@@ -24,43 +25,6 @@ title: Project Template
 
 <!-- ![Sample Image](./images/sample.png) -->
 
-#### Table of Contents
-1. [Introduction](#introduction)
-2. [Solution Architecture](#solution-architecture )
-3. [Hardware & Software Designs](#hardware-and-software-designs)
-4. [Testing](#testing)
-5. [Detailed budget](#detailed-budget)
-6. [Conclusion](#conclusion)
-7. [Links](#links)
-
-## Introduction
-
-Description of the real world problem and solution, impact
-
-
-## Solution Architecture
-
-High level diagram + description
-
-## Hardware and Software Designs
-
-Detailed designs with many sub-sections
-
-## Testing
-
-Testing done on hardware and software, detailed + summarized results
-
-## Detailed budget
-
-All items and costs
-
-| Item          | Quantity  | Unit Cost  | Total  |
-| ------------- |:---------:|:----------:|-------:|
-| Sample item   | 5         | 10 LKR     | 50 LKR |
-
-## Conclusion
-
-What was achieved, future developments, commercialization plans
 
 ## Links
 
@@ -69,5 +33,3 @@ What was achieved, future developments, commercialization plans
 - [Department of Computer Engineering](http://www.ce.pdn.ac.lk/)
 - [University of Peradeniya](https://eng.pdn.ac.lk/)
 
-[//]: # (Please refer this to learn more about Markdown syntax)
-[//]: # (https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)
