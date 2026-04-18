@@ -40,4 +40,12 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
             @Param("center") CollectionCenter center,
             @Param("week") int week,
             @Param("year") int year);
+
+    @Query("SELECT i FROM Invoice i WHERE i.farmer = :farmer " +
+           "AND FUNCTION('date_part', 'week', i.measurementDateTime) = :week " +
+           "AND FUNCTION('date_part', 'year', i.measurementDateTime) = :year")
+    List<Invoice> findByFarmerAndWeekAndYear(
+            @Param("farmer") Farmer farmer,
+            @Param("week") int week,
+            @Param("year") int year);
 }

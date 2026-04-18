@@ -43,6 +43,8 @@ Without it you get 403 Forbidden.
 
 Invoices can be created manually by APIs for testing
 
+All the payments are done weekly.
+
 
 
 

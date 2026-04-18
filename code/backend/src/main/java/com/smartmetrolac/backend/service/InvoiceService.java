@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.WeekFields;
 import java.util.List;
 
 @Service
@@ -23,15 +24,18 @@ public class InvoiceService {
     private final FarmerRepository farmerRepository;
     private final DeviceRepository deviceRepository;
     private final CollectionCenterRepository collectionCenterRepository;
+    private final PaymentService paymentService;
 
     public InvoiceService(InvoiceRepository invoiceRepository,
                           FarmerRepository farmerRepository,
                           DeviceRepository deviceRepository,
-                          CollectionCenterRepository collectionCenterRepository) {
+                          CollectionCenterRepository collectionCenterRepository,
+                          PaymentService paymentService) {
         this.invoiceRepository = invoiceRepository;
         this.farmerRepository = farmerRepository;
         this.deviceRepository = deviceRepository;
         this.collectionCenterRepository = collectionCenterRepository;
+        this.paymentService = paymentService;
     }
 
     public List<Invoice> getInvoicesByCenter(Long centerId) {
@@ -89,6 +93,12 @@ public class InvoiceService {
         invoice.setPhStatus(phStatus);
         invoice.setTdsStatus(tdsStatus);
 
-        return invoiceRepository.save(invoice);
+        Invoice savedInvoice = invoiceRepository.save(invoice);
+
+        int week = savedInvoice.getMeasurementDateTime().get(WeekFields.ISO.weekOfWeekBasedYear());
+        int year = savedInvoice.getMeasurementDateTime().getYear();
+        paymentService.calculateAndSaveWeeklyPayment(farmerId, week, year);
+
+        return savedInvoice;
     }
 }
