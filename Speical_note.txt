@@ -1,10 +1,47 @@
-Made by Naxdun.
+Made by Naxdun. 
 
 Password is set to password123 for all test users.
 
 Spring Security+JWT authentication is done.
 BCrypt hashing algorithm is used to securely store the passwords.
 The roles are also embedded in the JWT tokens.
+
+----------------------------------------------
+
+Business Logic>>
+
+--Login--
+Farmers can login use their ID as their username.
+At first the password is set to 00000000.
+Then at the first login, the farmer is forced to reset their password.
+If the fatmer forget their password, the Collection center admin canreset their passwords to 00000000.
+
+
+Usernames:
+
+Farmer --> F0001, F0002..
+Collection center Manager --> M0001, M0002..
+Company admin --> A0001, A0002..
+
+
+Endpoints working:
+
+GET /api/farmers?centerId=1 — list all farmers in a center
+GET /api/farmers/{id} — get one farmer
+POST /api/farmers — register new farmer
+PUT /api/farmers/{id} — update farmer info
+DELETE /api/farmers/{id} — delete farmer
+
+Notes:
+
+Role-based access — @PreAuthorize controls who can do what. 
+Only collection_center_admin can create/update/delete. Both admins can view.
+
+Token required — every request needs Authorization: Bearer <token> in the header. 
+Without it you get 403 Forbidden.
+
+
+Invoices can be created manually by APIs for testing
 
 
 

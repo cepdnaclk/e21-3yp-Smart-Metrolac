@@ -28,6 +28,9 @@ public class UserEntity {
     @Column(name = "role", nullable = false, length = 50)
     private String role;
 
+    @Column(name = "must_change_password")
+    private boolean mustChangePassword;
+
     public Long getId() {
         return id;
     }
@@ -66,5 +69,13 @@ public class UserEntity {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public boolean isMustChangePassword() {
+        return mustChangePassword;
+    }
+
+    public void setMustChangePassword(boolean mustChangePassword) {
+        this.mustChangePassword = mustChangePassword;
     }
 }
