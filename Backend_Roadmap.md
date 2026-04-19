@@ -1,12 +1,12 @@
 # SMART-METROLAC: BACKEND ROADMAP
-**Last Updated:** April 2026 — Backend Developer View Only
+**Last Updated:** April 18, 2026 — Backend Developer View Only
 
 ---
 
 ## 📍 CURRENT POSITION
-> **Phase 2 — Core Implementation**
-> Spring Security + JWT ✅ just completed
-> Next: Business Services + CRUD Controllers
+> **Phase 2B — Business Services**
+> FarmerService ✅ InvoiceService ✅ PaymentService ✅
+> Next: AlertService + AlertController
 
 ---
 
@@ -27,8 +27,7 @@
 
 | Task | Status |
 |------|--------|
-| `spring-boot-starter-security` added to pom.xml | ✅ Done |
-| `jjwt` 0.12.6 added to pom.xml | ✅ Done |
+| `spring-boot-starter-security` + `jjwt` added to pom.xml | ✅ Done |
 | `JwtUtil.java` — generates + validates tokens | ✅ Done |
 | `JwtAuthFilter.java` — reads token from request header | ✅ Done |
 | `SecurityConfig.java` — security rules + filter chain | ✅ Done |
@@ -41,60 +40,80 @@
 
 ---
 
-## 🔜 PHASE 2B: BUSINESS SERVICES — NEXT
+## 🔄 PHASE 2B: BUSINESS SERVICES — IN PROGRESS
 
-### Step 1: FarmerService + FarmerController
+### Step 1: FarmerService + FarmerController ✅ DONE
 ```
-⬜ FarmerService.java
+✅ FarmerService.java
    - getAllFarmersByCenter(centerId)
    - getFarmerById(id)
-   - createFarmer(dto)
-   - updateFarmer(id, dto)
+   - createFarmer() — auto creates User account (F0001, F0002...)
+   - updateFarmer(id)
    - deleteFarmer(id)
 
-⬜ FarmerController.java
+✅ FarmerController.java
    - GET    /api/farmers?centerId=1
    - GET    /api/farmers/{id}
    - POST   /api/farmers
    - PUT    /api/farmers/{id}
    - DELETE /api/farmers/{id}
+
+✅ FarmerResponse.java — clean DTO, no sensitive data exposed
+✅ Auto user creation with default password 00000000
+✅ must_change_password = true on creation
+✅ Username format: F0001, F0002...
 ```
 
-### Step 2: InvoiceService + InvoiceController
+### Step 2: InvoiceService + InvoiceController ✅ DONE
 ```
-⬜ InvoiceService.java
-   - getInvoicesByFarmer(farmerId)
+✅ InvoiceService.java
    - getInvoicesByCenter(centerId)
+   - getInvoicesByCenterAndDateRange(centerId, start, end)
+   - getInvoicesByCenterAndWeek(centerId, week, year)
    - getInvoiceById(id)
+   - createInvoice() — also auto-triggers payment calculation
 
-⬜ InvoiceController.java
-   - GET /api/invoices?farmerId=1
+✅ InvoiceController.java
    - GET /api/invoices?centerId=1
+   - GET /api/invoices?centerId=1&start=...&end=...
+   - GET /api/invoices?centerId=1&week=16&year=2026
    - GET /api/invoices/{id}
+   - POST /api/invoices
+
+✅ InvoiceResponse.java — clean DTO
 ```
 
-### Step 3: PaymentService + PaymentController
+### Step 3: PaymentService + PaymentController ✅ DONE
 ```
-⬜ PaymentService.java
-   - getPaymentsByFarmer(farmerId)
+✅ PaymentService.java
    - calculateAndSaveWeeklyPayment(farmerId, week, year)
-   ⚠️ MQTT pipeline creates invoices but never creates
-      Payment records — this gap must be fixed here
+   - getPaymentsByFarmer(farmerId)
+   - getPaymentByFarmerAndWeek(farmerId, week, year)
+   - getPaymentsByCenter(centerId)
 
-⬜ PaymentController.java
+✅ PaymentController.java
    - GET  /api/payments?farmerId=1
-   - POST /api/payments/calculate
+   - GET  /api/payments?farmerId=1&week=16&year=2026
+   - GET  /api/payments?centerId=1
+   - POST /api/payments/calculate?farmerId=1&week=16&year=2026
+
+✅ PaymentResponse.java — clean DTO
+✅ Auto-calculation fixed — payment updates when invoice is created
 ```
 
-### Step 4: AlertService + AlertController
+### Step 4: AlertService + AlertController 🔜 NEXT
 ```
 ⬜ AlertService.java
    - getUnresolvedAlerts(centerId)
+   - getAllAlerts(centerId)
    - resolveAlert(alertId, resolvedByUserId)
 
 ⬜ AlertController.java
+   - GET /api/alerts?centerId=1
    - GET /api/alerts/unresolved?centerId=1
    - PUT /api/alerts/{id}/resolve
+
+⬜ AlertResponse.java — clean DTO
 ```
 
 ---
@@ -111,6 +130,7 @@
 
 ⬜ Input validation (@Valid on all DTOs)
 ⬜ Remove TestController.java (placeholder, not needed)
+⬜ UserService — change password + admin reset to 00000000
 ```
 
 ---
@@ -118,10 +138,10 @@
 ## ⬜ PHASE 3: INTEGRATION
 
 ```
-⬜ Fix Payment record creation in MQTT pipeline
 ⬜ Test full flow: device → MQTT → invoice → payment → dashboard
 ⬜ Optimize dashboard queries (<100ms)
 ⬜ Sync MQTT payload format with firmware team
+⬜ Fix MQTT pipeline to also trigger payment calculation
 ```
 
 ---
@@ -149,10 +169,11 @@
 | Admin Dashboard | ✅ Done |
 | Spring Security + JWT | ✅ Done |
 | Login endpoint | ✅ Done |
-| FarmerService + Controller | ⬜ Next |
-| InvoiceService + Controller | ⬜ Next |
-| PaymentService + Controller | ⬜ Next |
-| AlertService + Controller | ⬜ Next |
+| FarmerService + Controller | ✅ Done |
+| InvoiceService + Controller | ✅ Done |
+| PaymentService + Controller | ✅ Done |
+| AlertService + Controller | 🔜 Next |
+| UserService (password change) | ⬜ Pending |
 | Global Exception Handler | ⬜ Pending |
 | Input Validation | ⬜ Pending |
 | Integration Testing | ⬜ Pending |
