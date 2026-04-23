@@ -44,21 +44,21 @@ const AdminDashboard = () => {
 
     const refreshTimer = setInterval(() => {
       dispatch(loadDashboardData());
-    }, 15000);
+    }, 150000);
 
     return () => clearInterval(refreshTimer);
   }, [dispatch]);
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-slate-50">
-        <div className="text-xl font-semibold text-gray-600 animate-pulse">Loading Company Data...</div>
+      <div className="flex items-center justify-center h-screen bg-transparent">
+        <div className="text-xl font-semibold text-gray-100 animate-pulse">Loading Company Data...</div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-slate-100 font-sans">
+    <div className="flex h-screen bg-transparent font-sans">
       {/* Sidebar Navigation */}
       <aside className="w-64 bg-slate-900 text-white flex flex-col shadow-lg">
         <div className="p-6 border-b border-slate-700">
@@ -79,13 +79,13 @@ const AdminDashboard = () => {
       {/* Main Content Area */}
       <main className="flex-1 p-8 overflow-y-auto">
         <header className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-800">Company Overview</h2>
-          <p className="text-slate-500">Welcome back. Here is today's network status.</p>
+          <h2 className="text-white fint-medium font-bold text-slate-800">Company Overview</h2>
+          <p className="text-white">Welcome back. Here is today's network status.</p>
         </header>
 
         {/* KPI Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-slate-200/20 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">Active Collection Centers</p>
               <p className="text-4xl font-bold text-slate-800 mt-2">{kpis.totalCenters}</p>
@@ -94,7 +94,7 @@ const AdminDashboard = () => {
               <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
             </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex items-center justify-between">
+          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-slate-200/20 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">Total Registered Farmers</p>
               <p className="text-4xl font-bold text-slate-800 mt-2">{kpis.totalFarmers.toLocaleString()}</p>
@@ -107,7 +107,7 @@ const AdminDashboard = () => {
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Analytics Chart */}
-          <div className="xl:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+          <div className="xl:col-span-2 bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-slate-200/20">
             <h3 className="text-lg font-bold text-slate-800 mb-4">Total Litres Collected (Current Month)</h3>
             <div className="h-80 w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -124,7 +124,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Global Alert Feed */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+          <div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-slate-200/20">
             <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center justify-between">
               System Alerts
               <span className="text-xs bg-red-100 text-red-600 py-1 px-2 rounded-full font-bold">
