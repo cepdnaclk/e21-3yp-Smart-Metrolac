@@ -39,20 +39,19 @@ public class MqttMeasurementService {
     }
 
     /**
-     * Expected MQTT JSON payload structure (all lowercase snake_case):
+     * Expected MQTT JSON payload structure:
      * {
-     *   "temperature": 29.4,
-     *   "ph": 7.1,
-     *   "ph_alert": "normal" | "warning" | "critical",
-     *   "tds_value": 1200,
-     *   "tds_alert": "normal" | "warning" | "critical",
-     *   "drc_value": 32.1,
-     *   "litres": 12.5,
      *   "farmer_id": 1,
      *   "collection_center_id": 1,
-     *   "company_id": 1,
-     *   "payment_value": 3410.62
+     *   "drc": 35.50,
+     *   "total_litres": 10.00,
+     *   "total_amount": 2500.00,
+     *   "temperature": 27.00,
+     *   "ph_status": "normal" | "warning" | "critical",
+     *   "tds_status": "normal" | "warning" | "critical",
+     *   "measurement_datetime": "2026-04-18T10:00:00"
      * }
+     * Field name aliases are also accepted (e.g. farmerId, f_id, drc_value, litres, payment_value)
      */
     @Transactional
     public void handleRawPayload(String payload) {
