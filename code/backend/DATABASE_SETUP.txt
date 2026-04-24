@@ -1,0 +1,253 @@
+SMART-METROLAC BACKEND - LOCAL POSTGRESQL DATABASE SETUP
+========================================================
+
+This file explains how to create the PostgreSQL database for the Smart-Metrolac
+project using pgAdmin 4 (GUI) or psql (command line), and defines the schema
+matching the current ER diagram (Company, Centers, Users, Farmers, Devices,
+Invoices, Payments, Alerts).
+
+--------------------------------------------------------
+1) CREATE DATABASE (pgAdmin 4)
+--------------------------------------------------------
+1. Open pgAdmin 4.
+2. In the left "Browser" panel, expand: Servers → PostgreSQL → Databases.
+3. Right–click "Databases" → Create → Database...
+4. Set:
+   - Database: smart_metrolac
+   - Owner: postgres (or your own admin user)
+5. Click "Save".
+
+To run SQL in this database:
+1. Expand Databases → smart_metrolac.
+2. Right–click smart_metrolac → "Query Tool".
+3. Paste the SQL from section 3 into the editor.
+4. Click the lightning bolt "Execute" button.
+
+--------------------------------------------------------
+2) CREATE DATABASE (psql CLI, optional alternative)
+--------------------------------------------------------
+From a terminal/PowerShell:
+
+  psql -U postgres
+
+Then inside the psql prompt:
+
+  CREATE DATABASE smart_metrolac;
+  \c smart_metrolac;
+
+Now you can paste and run the SQL from section 3.
+
+--------------------------------------------------------
+3) FINAL SCHEMA SQL (tables + relationships)
+--------------------------------------------------------
+This script matches the **Database_Schema_Final.pdf** exactly.
+Run it while connected to the smart_metrolac database (schema: public).
+
+  -- USER (login accounts)
+  CREATE TABLE IF NOT EXISTS "user" (
+    user_id       SERIAL PRIMARY KEY,
+    username      VARCHAR(100) UNIQUE NOT NULL,
+    email         VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    role          VARCHAR(50) NOT NULL
+  );
+
+
+  -- COMPANY (one company admin user per company)
+  CREATE TABLE IF NOT EXISTS company (
+    company_id    SERIAL PRIMARY KEY,
+    company_name  VARCHAR(100) NOT NULL,
+    admin_id      INT NOT NULL,
+    FOREIGN KEY (admin_id) REFERENCES "user"(user_id)
+  );
+
+
+  -- COLLECTION_CENTER (belongs to a company, managed by a user)
+  CREATE TABLE IF NOT EXISTS collection_center (
+    collection_center_id  SERIAL PRIMARY KEY,
+    company_id            INT NOT NULL,
+    manager_id            INT NOT NULL,
+    name                  VARCHAR(100) NOT NULL,
+    address               VARCHAR(255),
+    phone_number          VARCHAR(20),
+    FOREIGN KEY (company_id) REFERENCES company(company_id),
+    FOREIGN KEY (manager_id) REFERENCES "user"(user_id)
+  );
+
+
+  -- DEVICE (Smart-Metrolac terminals installed at centers)
+  CREATE TABLE IF NOT EXISTS device (
+    device_id             SERIAL PRIMARY KEY,
+    collection_center_id  INT NOT NULL,
+    FOREIGN KEY (collection_center_id) REFERENCES collection_center(collection_center_id)
+  );
+
+
+  -- FARMER (registered to a collection center)
+  CREATE TABLE IF NOT EXISTS farmer (
+    farmer_id             SERIAL PRIMARY KEY,
+    collection_center_id  INT NOT NULL,
+    name                  VARCHAR(100) NOT NULL,
+    address               VARCHAR(255),
+    phone_number          VARCHAR(20),
+    FOREIGN KEY (collection_center_id) REFERENCES collection_center(collection_center_id)
+  );
+
+
+  -- INVOICE (one measurement = one invoice)
+  CREATE TABLE IF NOT EXISTS invoice (
+    invoice_id            SERIAL PRIMARY KEY,
+    farmer_id             INT NOT NULL,
+    device_id             INT NOT NULL,
+    collection_center_id  INT NOT NULL,
+    measurement_datetime  TIMESTAMP NOT NULL,
+    drc                   DECIMAL(5,2) NOT NULL,
+    total_litres          DECIMAL(8,2) NOT NULL,
+    total_amount          DECIMAL(12,2),
+    temperature           DECIMAL(5,2),
+    ph_status             VARCHAR(20),
+    tds_status            VARCHAR(20),
+    FOREIGN KEY (farmer_id) REFERENCES farmer(farmer_id),
+    FOREIGN KEY (device_id) REFERENCES device(device_id),
+    FOREIGN KEY (collection_center_id) REFERENCES collection_center(collection_center_id)
+  );
+
+
+  -- PAYMENT (weekly, one record per farmer/week/year)
+  CREATE TABLE IF NOT EXISTS payment (
+    payment_id    SERIAL PRIMARY KEY,
+    farmer_id     INT NOT NULL,
+    week          INT NOT NULL,
+    year          INT NOT NULL,
+    total_amount  DECIMAL(12,2) NOT NULL,
+    FOREIGN KEY (farmer_id) REFERENCES farmer(farmer_id),
+    UNIQUE (farmer_id, year, week)
+  );
+
+
+  -- ALERT (quality / fraud / device alerts linked to invoices)
+  CREATE TABLE IF NOT EXISTS alert (
+    alert_id            SERIAL PRIMARY KEY,
+    invoice_id          INT NOT NULL,
+    alert_type          VARCHAR(50),
+    severity            VARCHAR(20),
+    message             TEXT,
+    resolved            BOOLEAN DEFAULT FALSE,
+    resolved_by_user_id INT,
+    created_date        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (invoice_id) REFERENCES invoice(invoice_id),
+    FOREIGN KEY (resolved_by_user_id) REFERENCES "user"(user_id)
+  );
+
+
+  -- Helpful indexes for query performance
+  CREATE INDEX IF NOT EXISTS idx_collection_center_company
+    ON collection_center(company_id);
+
+  CREATE INDEX IF NOT EXISTS idx_device_collection_center
+    ON device(collection_center_id);
+
+  CREATE INDEX IF NOT EXISTS idx_farmer_collection_center
+    ON farmer(collection_center_id);
+
+  CREATE INDEX IF NOT EXISTS idx_invoice_farmer
+    ON invoice(farmer_id);
+
+  CREATE INDEX IF NOT EXISTS idx_invoice_collection_center
+    ON invoice(collection_center_id);
+
+  CREATE INDEX IF NOT EXISTS idx_invoice_measurement_datetime
+    ON invoice(measurement_datetime);
+
+  CREATE INDEX IF NOT EXISTS idx_payment_farmer_week_year
+    ON payment(farmer_id, year, week);
+
+  CREATE INDEX IF NOT EXISTS idx_alert_invoice
+    ON alert(invoice_id);
+
+
+--------------------------------------------------------
+4) MOCK DATA INSERT SCRIPT
+--------------------------------------------------------
+Use this after running the schema to populate a small demo dataset
+for local testing (admin/manager/farmer logins + one company/center).
+
+  -- USERS
+  INSERT INTO "user" (username, email, password_hash, role) VALUES
+    ('admin_1',   'admin@smartmetrolac.test',   'password123-hash-placeholder', 'company_admin'),
+    ('manager_1', 'manager@smartmetrolac.test', 'password123-hash-placeholder', 'collection_center_admin'),
+    ('farmer_1',  'farmer1@smartmetrolac.test', 'password123-hash-placeholder', 'farmer'),
+    ('farmer_2',  'farmer2@smartmetrolac.test', 'password123-hash-placeholder', 'farmer');
+
+  -- COMPANY (admin_1 is the company admin)
+  INSERT INTO company (company_name, admin_id) VALUES
+    ('Lakshitha Rubber Company', 1);
+
+  -- COLLECTION CENTER (managed by manager_1)
+  INSERT INTO collection_center (company_id, manager_id, name, address, phone_number) VALUES
+    (1, 2, 'Kalutara Main Center', 'Kalutara, Sri Lanka', '+94-11-1234567');
+
+  -- DEVICE at the collection center
+  INSERT INTO device (collection_center_id) VALUES
+    (1);
+
+  -- FARMERS registered to the center
+  INSERT INTO farmer (collection_center_id, name, address, phone_number) VALUES
+    (1, 'Saman Kumara',  'Village Road 1, Kalutara', '+94-77-1111111'),
+    (1, 'Nimal Perera',  'Village Road 2, Kalutara', '+94-77-2222222');
+
+  -- INVOICES (measurements) for current week
+  INSERT INTO invoice (
+    farmer_id, device_id, collection_center_id, measurement_datetime,
+    drc, total_litres, total_amount, temperature, ph_status, tds_status
+  ) VALUES
+    (1, 1, 1, NOW() - INTERVAL '2 days', 32.10, 12.50, 3410.62, 27.5, 'normal',  'normal'),
+    (2, 1, 1, NOW() - INTERVAL '1 days', 29.50,  8.00, 2006.00, 28.0, 'warning', 'critical');
+
+  -- PAYMENTS (weekly summaries, example week/year)
+  INSERT INTO payment (farmer_id, week, year, total_amount) VALUES
+    (1, 10, 2026, 3410.62),
+    (2, 10, 2026, 2006.00);
+
+  -- ALERTS (linked to invoices)
+  INSERT INTO alert (invoice_id, alert_type, severity, message, resolved, resolved_by_user_id) VALUES
+    (2, 'fraud_suspected', 'critical', 'High TDS detected for farmer Nimal Perera.', FALSE, NULL),
+    (2, 'spoilage_detected', 'warning', 'Low pH indicates possible spoilage.', TRUE, 2);
+
+
+HOW TO RUN MOCK DATA SCRIPT IN PGADMIN
+--------------------------------------
+1. In pgAdmin, connect to your server and select the smart_metrolac database.
+2. Open "Tools → Query Tool".
+3. Make sure the schema/tables from Section 3 already exist.
+4. Paste the SQL from this section (mock data) into the editor.
+5. Click the "Execute" (lightning) button.
+6. Verify with queries such as:
+
+     SELECT * FROM "user";
+     SELECT * FROM company;
+     SELECT * FROM collection_center;
+     SELECT * FROM farmer;
+     SELECT * FROM invoice;
+     SELECT * FROM payment;
+     SELECT * FROM alert;
+
+
+--------------------------------------------------------
+5) QUICK VERIFICATION QUERIES
+--------------------------------------------------------
+To verify tables:
+
+  SELECT table_name
+  FROM information_schema.tables
+  WHERE table_schema = 'public'
+  ORDER BY table_name;
+
+To smoke-test relationships (example):
+
+  -- Should return 0 rows initially, but run without errors:
+  SELECT *
+  FROM invoice i
+  JOIN farmer f ON i.farmer_id = f.farmer_id
+  JOIN collection_center cc ON i.collection_center_id = cc.collection_center_id;
+
