@@ -1,18 +1,27 @@
 package com.smartmetrolac.backend.mqtt;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smartmetrolac.backend.entity.*;
-import com.smartmetrolac.backend.repository.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smartmetrolac.backend.entity.Alert;
+import com.smartmetrolac.backend.entity.CollectionCenter;
+import com.smartmetrolac.backend.entity.Device;
+import com.smartmetrolac.backend.entity.Farmer;
+import com.smartmetrolac.backend.entity.Invoice;
+import com.smartmetrolac.backend.repository.AlertRepository;
+import com.smartmetrolac.backend.repository.CollectionCenterRepository;
+import com.smartmetrolac.backend.repository.DeviceRepository;
+import com.smartmetrolac.backend.repository.FarmerRepository;
+import com.smartmetrolac.backend.repository.InvoiceRepository;
 
 @Service
 public class MqttMeasurementService {
@@ -47,11 +56,10 @@ public class MqttMeasurementService {
      *   "total_litres": 10.00,
      *   "total_amount": 2500.00,
      *   "temperature": 27.00,
-     *   "ph_status": "normal" | "warning" | "critical",
-     *   "tds_status": "normal" | "warning" | "critical",
+     *   "ph_status": "normal",
+     *   "tds_status": "normal",
      *   "measurement_datetime": "2026-04-18T10:00:00"
      * }
-     * Field name aliases are also accepted (e.g. farmerId, f_id, drc_value, litres, payment_value)
      */
     @Transactional
     public void handleRawPayload(String payload) {
