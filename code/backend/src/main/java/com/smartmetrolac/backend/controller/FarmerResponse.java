@@ -5,6 +5,7 @@ import com.smartmetrolac.backend.entity.Farmer;
 public class FarmerResponse {
 
     Long id;
+    String farmerCode;
     String name;
     String address;
     String phoneNumber;
@@ -14,6 +15,7 @@ public class FarmerResponse {
     public static FarmerResponse from(Farmer farmer) {
         FarmerResponse response = new FarmerResponse();
         response.id = farmer.getId();
+        response.farmerCode = String.format("%04d", farmer.getId());
         response.name = farmer.getName();
         response.address = farmer.getAddress();
         response.phoneNumber = farmer.getPhoneNumber();
@@ -23,6 +25,7 @@ public class FarmerResponse {
     }
 
     public Long getId() { return id; }
+    public String getFarmerCode() { return farmerCode; }
     public String getName() { return name; }
     public String getAddress() { return address; }
     public String getPhoneNumber() { return phoneNumber; }
