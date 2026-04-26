@@ -8,20 +8,27 @@
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <time.h> 
+#include <LittleFS.h>
 
 // --- NTP TIME SETTINGS (Sri Lanka +5:30) ---
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 19800; // 5.5 hours * 3600 seconds
 const int   daylightOffset_sec = 0; // No daylight saving time
 
+// NEW: Offline Sync Variables
+const char* BACKLOG_FILE = "/backlog.txt";
+unsigned long lastSyncAttempt = 0;
+
 // ==========================================
 // 1. NETWORK & MQTT CREDENTIALS
 // ==========================================
 const char* ssid = "Mano-Redmi";        
 const char* password = "12345678"; 
-const char* mqtt_server = "10.65.152.180";  // Change to your laptop's IP
+const char* mqtt_server = "10.65.152.179";  // Change to your laptop's IP
 const int mqtt_port = 1883;
 const char* mqtt_topic = "smartmetrolac/device01/telemetry";
+
+const int period = 10;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -102,6 +109,13 @@ unsigned long lastReconnectAttempt = 0;
 // ==========================================
 void setup() {
   Serial.begin(115200);
+
+  // NEW: Initialize LittleFS
+  if (!LittleFS.begin(true)) { // 'true' formats the drive if it fails to mount
+    Serial.println("LittleFS Mount Failed!");
+  } else {
+    Serial.println("LittleFS Mounted Successfully.");
+  }
   
   lcd.init(); lcd.backlight();
   pinMode(BUZZER_PIN, OUTPUT); digitalWrite(BUZZER_PIN, LOW);
@@ -126,6 +140,14 @@ void setup() {
 // 5. MAIN LOOP
 // ==========================================
 void loop() {
+  // --- BACKGROUND OFFLINE SYNC (IDLE ONLY) ---
+  // Only attempts sync every 10 seconds IF sitting at the start screen with no keys typed
+  if (millis() - lastSyncAttempt > 10000) {
+    lastSyncAttempt = millis();
+    if (currentState == STATE_AUTH && supplierID.length() == 0) {
+      syncOfflineData();
+    }
+  }
 
   // --- KEYPAD POLLING ---
   char key = customKeypad.getKey();
@@ -249,12 +271,12 @@ void loop() {
         
         float phEMA = 0.0;
 
-        for (int sec = 30; sec > 0; sec--) {
+        for (int sec = period; sec > 0; sec--) {
           // LCD Update
           lcd.setCursor(0, 2); lcd.print("Time Left: "); 
           if(sec < 10) lcd.print("0"); 
           lcd.print(sec); lcd.print("s   ");
-          int bars = ((30 - sec) * 18) / 30;
+          int bars = ((period - sec) * 18) / period;
           lcd.setCursor(1, 3); for(int b = 0; b < bars; b++) lcd.print("|");
 
           // Read Sensors
@@ -264,7 +286,7 @@ void loop() {
           float livePH = getStablePH();         // Takes ~220ms
           
           // Long-term pH EMA math
-          if (sec == 30) phEMA = livePH; 
+          if (sec == period) phEMA = livePH; 
           else if (sec > 5) phEMA = (livePH * 0.15) + (phEMA * 0.85);
 
           // Serial Monitor Output
@@ -406,24 +428,8 @@ float getStableTDS(float tempC) {
   return (tds < 0) ? 0 : tds;
 }
 
-// --- MQTT "ON-DEMAND" PUBLISH ---
+// --- MQTT "ON-DEMAND" PUBLISH WITH STORE-AND-FORWARD ---
 void publishTelemetry(float drc, float litres, float payment) {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Wi-Fi Offline. Skipping Sync.");
-    return;
-  }
-
-  // Only try to connect to the server right when we need to send the data
-  if (!client.connected()) {
-    Serial.print("Connecting to MQTT Server...");
-    if (!client.connect("ESP32_SmartMetrolac")) {
-      Serial.println(" FAILED. Data not sent.");
-      return; // Give up and don't freeze the screen
-    }
-    Serial.println(" OK!");
-  }
-
-  // We are connected! Build and send the JSON payload
   StaticJsonDocument<256> doc;
   doc["farmer_id"] = supplierID.toInt();
   doc["collection_center_id"] = collection_center_id;
@@ -437,13 +443,33 @@ void publishTelemetry(float drc, float litres, float payment) {
   
   char jsonBuffer[256]; 
   serializeJson(doc, jsonBuffer);
-  
-  if (client.publish(mqtt_topic, jsonBuffer)) {
-    Serial.println("MQTT Sync Success!");
+
+  // Attempt to Connect & Publish
+  bool publishSuccess = false;
+  if (WiFi.status() == WL_CONNECTED) {
+    if (!client.connected()) {
+      Serial.print("Connecting to MQTT...");
+      client.connect("ESP32_SmartMetrolac");
+    }
+    if (client.connected() && client.publish(mqtt_topic, jsonBuffer)) {
+      publishSuccess = true;
+      Serial.println("MQTT Sync Success!");
+      client.loop(); 
+    }
   }
-  
-  // Briefly run the loop to ensure the message clears the ESP32's buffer
-  client.loop(); 
+
+  // FALLBACK: Store to Flash Memory if Publish Failed
+  if (!publishSuccess) {
+    Serial.println("Network offline. Saving invoice to LittleFS...");
+    File file = LittleFS.open(BACKLOG_FILE, FILE_APPEND);
+    if (!file) {
+      Serial.println("CRITICAL ERROR: Could not open backlog file!");
+      return;
+    }
+    file.println(jsonBuffer); // Append data with a newline
+    file.close();
+    Serial.println("Offline data saved successfully.");
+  }
 }
 
 // Audio
@@ -463,4 +489,53 @@ String getLiveTime() {
   // Formats exactly like: "2026-04-26T14:30:00"
   strftime(timeStringBuff, sizeof(timeStringBuff), "%Y-%m-%dT%H:%M:%S", &timeinfo);
   return String(timeStringBuff);
+}
+
+void syncOfflineData() {
+  if (WiFi.status() != WL_CONNECTED) return;
+  
+  // Warning: If broker is offline, this next line blocks for ~3-5 seconds.
+  // Because we only run this in STATE_AUTH when idle, it won't interrupt the user.
+  if (!client.connected()) {
+    if (!client.connect("ESP32_SmartMetrolac")) return; 
+  }
+
+  if (!LittleFS.exists(BACKLOG_FILE)) return; 
+
+  File file = LittleFS.open(BACKLOG_FILE, FILE_READ);
+  if (!file || file.size() == 0) return;
+
+  Serial.println("\n--- BACKGROUND SYNC START ---");
+  
+  File tempFile = LittleFS.open("/temp.txt", FILE_WRITE);
+  bool allSynced = true;
+
+  while (file.available()) {
+    String line = file.readStringUntil('\n');
+    line.trim(); 
+    
+    if (line.length() > 0) {
+      if (client.connected() && client.publish(mqtt_topic, line.c_str())) {
+        Serial.println("Synced: " + line);
+        client.loop(); // Keep buffer clear
+        // Note: delay(100) removed! Blasts data to local Spring Boot instantly.
+      } else {
+        Serial.println("Connection lost! Pausing sync...");
+        tempFile.println(line);
+        allSynced = false;
+      }
+    }
+  }
+  
+  file.close();
+  tempFile.close();
+
+  if (allSynced) {
+    LittleFS.remove(BACKLOG_FILE); 
+    LittleFS.remove("/temp.txt");
+    Serial.println("--- SYNC COMPLETE ---");
+  } else {
+    LittleFS.remove(BACKLOG_FILE);
+    LittleFS.rename("/temp.txt", BACKLOG_FILE);
+  }
 }
