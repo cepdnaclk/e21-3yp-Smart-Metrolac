@@ -9,6 +9,8 @@
 #include <ArduinoJson.h>
 #include <time.h> 
 #include <LittleFS.h>
+#include <HTTPClient.h>
+#include <Preferences.h>
 
 // --- NTP TIME SETTINGS (Sri Lanka +5:30) ---
 const char* ntpServer = "pool.ntp.org";
@@ -24,11 +26,11 @@ unsigned long lastSyncAttempt = 0;
 // ==========================================
 const char* ssid = "Mano-Redmi";        
 const char* password = "12345678"; 
-const char* mqtt_server = "10.65.152.179";  // Change to your laptop's IP
+const char* mqtt_server = "10.65.152.180";  // Change to your laptop's IP
 const int mqtt_port = 1883;
 const char* mqtt_topic = "smartmetrolac/device01/telemetry";
 
-const int period = 10;
+const int period = 30;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -54,9 +56,16 @@ HX711 scale;
 // --- CALIBRATION CONSTANTS ---
 float neutralVoltage = 2.33;         // pH 7.0 baseline
 float tdsKValue = 1.0;               // TDS Calibration
-float weightCalibration = 1770.0;    // Load Cell Baseline
-const float PLUMMET_VOLUME = 9.5;    // Must match actual displaced volume in cm3
-const float PRICE_PER_KG = 450.0;    // Today's Rubber Price
+float weightCalibration = 1360.0;    // Load Cell Baseline
+const float PLUMMET_VOLUME = 5.5;    // Must match actual displaced volume in cm3
+
+// --- REMOVE THIS LINE ---
+// const float PRICE_PER_KG = 450.0; 
+
+// --- ADD THESE LINES INSTEAD ---
+Preferences preferences;
+float pricePerKg = 450.0; // Default fallback, but it will update dynamically
+const char* priceApiUrl = "http://10.65.152.180:8080/api/price/current?companyId=1"; // Change to your Spring Boot REST endpoint
 
 // Keypad
 const byte ROWS = 4; const byte COLS = 4;
@@ -109,6 +118,12 @@ unsigned long lastReconnectAttempt = 0;
 // ==========================================
 void setup() {
   Serial.begin(115200);
+
+  // Initialize Preferences and load the last saved price
+  preferences.begin("metrolac", false); 
+  pricePerKg = preferences.getFloat("rubberPrice", 450.0); // 450.0 is the default if nothing is saved yet
+  Serial.print("Loaded Offline Price: Rs. ");
+  Serial.println(pricePerKg);
 
   // NEW: Initialize LittleFS
   if (!LittleFS.begin(true)) { // 'true' formats the drive if it fails to mount
@@ -239,7 +254,7 @@ void loop() {
         lcd.setCursor(0, 2); lcd.print("Stabilizing ...");
         delay(3000); // Give plummet time to stop swinging
         
-        lcd.setCursor(0, 3); lcd.print("Reading T1...");
+        lcd.setCursor(0, 3); lcd.print("Reading ...");
         weightAirT1 = getStableWeight();
         
         Serial.print("\n>>> T1 (AIR) LOCKED: "); Serial.print(weightAirT1, 1); Serial.println("g");
@@ -336,7 +351,7 @@ void loop() {
     case STATE_RAW_DATA:
       if (needsRedraw) {
         lcd.clear(); drawStatusBar();
-        lcd.setCursor(0, 1); lcd.print("Temperature:"); lcd.print(finalTemp, 0); lcd.print((char)223); lcd.print("C");
+        lcd.setCursor(0, 1); lcd.print("Temp:"); lcd.print(finalTemp, 0); lcd.print((char)223); lcd.print("C");
         lcd.setCursor(0, 2); lcd.print("pH:"); lcd.print(finalPH, 1);
         lcd.setCursor(10, 2); lcd.print("TDS:"); lcd.print(finalTDS, 0); 
         lcd.setCursor(0, 3); lcd.print("Press [A] for Report");
@@ -344,14 +359,44 @@ void loop() {
       }
       if (key == 'A') {
         playConfirm();
-        isAdulterated = false;
         
-        if (finalTDS > 500.0) { isAdulterated = true; alertWarning = "WARN: Salt Detected!"; alertAction  = "ACT: Reject Sample  "; }
-        else if (finalPH < 6.0) { isAdulterated = true; alertWarning = "WARN: High Acidity! "; alertAction  = "ACT: Add Ammonia    "; }
-        else if (finalPH > 8.0) { isAdulterated = true; alertWarning = "WARN: High Alkaline!"; alertAction  = "ACT: Inspect Sample "; }
+        // 1. Evaluate all conditions independently
+        bool hasSalt = (finalTDS > 500.0);
+        bool isAcidic = (finalPH < 6.0);
+        bool isAlkaline = (finalPH > 8.0);
 
-        if (isAdulterated) currentState = STATE_ALERTS; 
-        else currentState = STATE_INVOICE; 
+        // 2. Determine if ANY adulteration exists
+        isAdulterated = (hasSalt || isAcidic || isAlkaline);
+        
+        // 3. Set the specific warnings based on combinations
+        if (isAdulterated) {
+            if (hasSalt && isAcidic) {
+                alertWarning = "WARN: Salt & Acidic!";
+                alertAction  = "ACT: Reject Sample  "; // Reject always overrides adding ammonia
+            } 
+            else if (hasSalt && isAlkaline) {
+                alertWarning = "WARN: Salt & Alkalin"; 
+                alertAction  = "ACT: Reject Sample  "; 
+            } 
+            else if (hasSalt) {
+                alertWarning = "WARN: Salt Detected!";
+                alertAction  = "ACT: Reject Sample  ";
+            } 
+            else if (isAcidic) {
+                alertWarning = "WARN: High Acidity! ";
+                alertAction  = "ACT: Add Ammonia    ";
+            } 
+            else if (isAlkaline) {
+                alertWarning = "WARN: High Alkaline!";
+                alertAction  = "ACT: Inspect Sample ";
+            }
+            
+            currentState = STATE_ALERTS; 
+        } 
+        else {
+            currentState = STATE_INVOICE; 
+        }
+        
         needsRedraw = true;
       }
       break;
@@ -371,11 +416,16 @@ void loop() {
     case STATE_INVOICE:
       if (needsRedraw) {
         lcd.clear();
-        float payment = batchVolume * finalDRC * PRICE_PER_KG; 
+        lcd.setCursor(0, 0); lcd.print("Fetching Price..."); // Optional: tell user why it's pausing
+        
+        fetchDailyPrice(); // <--- MOVED INSIDE THE GATEKEEPER
+
+        lcd.clear();
+        float payment = batchVolume * finalDRC * pricePerKg; 
         publishTelemetry(finalDRC, batchVolume, payment);
 
-        lcd.setCursor(0, 0); lcd.print("ID:" + supplierID); lcd.setCursor(15, 0); lcd.print("L:"); lcd.print(batchVolume, 1);
-        lcd.setCursor(0, 1); lcd.print("DRC: "); lcd.print(finalDRC, 2);  
+        lcd.setCursor(0, 0); lcd.print("ID:" + supplierID); lcd.setCursor(9, 0); lcd.print("Rs"); lcd.print(pricePerKg, 2); lcd.print("/kg");
+        lcd.setCursor(0, 1); lcd.print("DRC: "); lcd.print(finalDRC, 2); lcd.setCursor(13, 1); lcd.print("L:"); lcd.print(batchVolume, 2);
         lcd.setCursor(0, 2); lcd.print("PAY: Rs."); lcd.print(payment, 2);
         lcd.setCursor(0, 3); lcd.print("[*]New User Session ");
         playSuccess(); needsRedraw = false;
@@ -392,6 +442,47 @@ void loop() {
 // ==========================================
 // 6. HELPER FUNCTIONS
 // ==========================================
+
+void fetchDailyPrice() {
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("Fetching daily price from backend...");
+    
+    HTTPClient http;
+    http.begin(priceApiUrl);
+    int httpResponseCode = http.GET(); // Send the HTTP GET request
+
+    if (httpResponseCode == 200) { 
+      String response = http.getString();
+      
+      // Parse the JSON Object
+      StaticJsonDocument<512> doc;
+      DeserializationError error = deserializeJson(doc, response);
+
+      if (!error) {
+        // Target the exact key from your Postman output
+        float fetchedPrice = doc["pricePerKg"]; 
+
+        if (fetchedPrice > 0) {
+          pricePerKg = fetchedPrice;
+          // Save it permanently to ESP32 flash memory
+          preferences.putFloat("rubberPrice", pricePerKg);
+          Serial.print(" SUCCESS! New Price Saved: Rs. ");
+          Serial.println(pricePerKg);
+        } else {
+           Serial.println(" ERROR: Parsed price is 0.");
+        }
+      } else {
+        Serial.print(" JSON Parsing Failed: ");
+        Serial.println(error.c_str());
+      }
+    } else {
+      Serial.print(" FAILED. HTTP Code: ");
+      Serial.println(httpResponseCode);
+    }
+    http.end(); // Free the resources
+  }
+}
+
 void drawStatusBar() {
   lcd.setCursor(0, 0); lcd.print("SMART-METROLAC ");
   if (WiFi.status() == WL_CONNECTED) lcd.print("   ON");
