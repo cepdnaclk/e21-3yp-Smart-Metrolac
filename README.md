@@ -55,7 +55,9 @@ Sri Lanka's natural rubber industry depends on a **decades-old manual measuremen
 
 Three-tier architecture connecting edge hardware to a cloud-backed web dashboard.
 
-![System Architecture](docs/images/system-architecture.png)
+<p align="center">
+    <img src="docs/images/system-architecture.png" alt="System Architecture" width="700" />
+</p>
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -91,7 +93,9 @@ Three-tier architecture connecting edge hardware to a cloud-backed web dashboard
 
 Complete measurement cycle and offline resilience flow.
 
-![Data & Control Flow](docs/images/data-flow.png)
+<p align="center">
+    <img src="docs/images/data-flow.png" alt="Data & Control Flow" width="700" />
+</p>
 
 ### Measurement Flow (State Machine)
 
@@ -284,8 +288,8 @@ Reconnected → Stream /backlog.txt to backend → Clear file
 | State Machine UI Flow | ✅ Passed |
 | Store-and-Forward / LittleFS | ✅ Passed |
 | NTP Sync & HTTP Pricing Fetch | ✅ Passed |
-| End-to-End Device → Database | ⏳ Pending Final Integration |
-| Frontend Login / Role Routing | ⏳ Pending |
+| End-to-End Device → Database | ✅ Passed |
+| Frontend Login / Role Routing | ✅ Passed |
 
 ---
 
@@ -293,45 +297,15 @@ Reconnected → Stream /backlog.txt to backend → Clear file
 
 **Group 16 · E/21 Batch · Department of Computer Engineering · University of Peradeniya**
 
-| Name | Role |
+| Name | E number |
 |------|------|
-| Member 1 | Hardware & Firmware |
-| Member 2 | Backend Engineering |
-| Member 3 | Frontend & UI/UX |
-| Member 4 | Systems Integration |
+| MANILGAMA N.C. | E/21/254 |
+| K.A.P.M.PERERA | E/21/292 |
+| RUKSHAN A.D. | E/21/339 |
+| SURIYAPPERUMA H.D. | E/21/453 |
 
 ---
 
-## 📁 Repository Structure
 
-```
-smart-metrolac/
-├── firmware/               # ESP32 Arduino C++ firmware
-│   ├── src/
-│   └── platformio.ini
-├── backend/                # Spring Boot (Java 21)
-│   ├── src/
-│   └── pom.xml
-├── frontend/               # React.js dashboard
-│   ├── src/
-│   └── package.json
-├── docs/
-│   └── images/
-│       ├── system-architecture.png   ← Three-Tier Architecture diagram
-│       └── data-flow.png             ← Measurement & Offline Flow diagram
-└── README.md
-```
-
----
-
-## 🖼️ Diagrams
-
-### System Architecture
-![System Architecture Diagram](docs/images/system-architecture.png)
-
-### Measurement & Offline Flow
-![Data Flow Diagram](docs/images/data-flow.png)
-
----
 
 *University of Peradeniya · Faculty of Engineering · Department of Computer Engineering · 2025/2026*
