@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ── Colors ─────────────────────────────────────────── */
+  --color-primary:        #2A5C3F;
+  --color-primary-light:  #3D8A5E;
+  --color-primary-lighter:#EAF3EE;
+
+  --color-accent:         #C8891A;
+  --color-accent-light:   #FDF3E3;
+
+  --color-bg:             #F5F6F2;
+  --color-surface:        #FFFFFF;
+
+  --color-text:           #1A1A1A;
+  --color-text-muted:     #6B7280;
+  --color-border:         #E2E4DC;
+
+  --color-success:        #16A34A;
+  --color-success-light:  #DCFCE7;
+  --color-warning:        #D97706;
+  --color-warning-light:  #FEF9C3;
+  --color-danger:         #DC2626;
+  --color-danger-light:   #FEE2E2;
+  --color-info:           #2563EB;
+  --color-info-light:     #EFF6FF;
+
+  /* ── Typography ─────────────────────────────────────── */
+  --font-sans: 'Inter', sans-serif;
+
+  /* ── Spacing / Radius ───────────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 0;
+}
