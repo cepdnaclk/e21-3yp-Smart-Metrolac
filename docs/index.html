@@ -206,17 +206,19 @@
   .diagram-wrapper{
     border:1px solid var(--border);border-radius:6px;overflow:hidden;
     background:var(--card);position:relative;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
   }
   .diagram-header{
     padding:1rem 1.5rem;border-bottom:1px solid var(--border);
-    display:flex;align-items:center;gap:0.75rem;
+    display:flex;align-items:center;justify-content:center;gap:0.75rem;
     background:var(--card2);
   }
   .diagram-dot{width:10px;height:10px;border-radius:50%}
   .diagram-title{font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text2);letter-spacing:0.05em}
   .diagram-wrapper img{
-    width:100%;height:auto;display:block;
-    padding:1.5rem;background:var(--card);
+    width:100%;max-width:900px;height:auto;max-height:70vh;object-fit:contain;display:block;margin:0 auto;
+    padding:1.5rem;background:var(--card);border-radius:6px;
+    box-shadow:var(--glow2);
   }
 
   /* ─── TECH STACK ─── */
@@ -284,7 +286,7 @@
     color:var(--accent);border:2px solid var(--border2);
   }
   .team-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.15rem}
-  .team-role{color:var(--text3);font-size:0.8rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em}
+  .E-number{color:var(--text3);font-size:0.8rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em}
 
   /* ─── PROGRESS ─── */
   .progress-list{display:flex;flex-direction:column;gap:1rem}
@@ -713,23 +715,23 @@
   <div class="team-grid">
     <div class="team-card">
       <div class="team-avatar">M1</div>
-      <div class="team-name">Team Member 1</div>
-      <div class="team-role">Hardware & Firmware</div>
+      <div class="team-name">Manilgama N.C.</div>
+      <div class="E-number">E/21/254</div>
     </div>
     <div class="team-card">
       <div class="team-avatar">M2</div>
-      <div class="team-name">Team Member 2</div>
-      <div class="team-role">Backend Engineering</div>
+      <div class="team-name">K.A.P.M.Perera</div>
+      <div class="E-number">E/21/292</div>
     </div>
     <div class="team-card">
       <div class="team-avatar">M3</div>
-      <div class="team-name">Team Member 3</div>
-      <div class="team-role">Frontend & UI/UX</div>
+      <div class="team-name">Rukshan A.D.</div>
+      <div class="E-number">E/21/339</div>
     </div>
     <div class="team-card">
       <div class="team-avatar">M4</div>
-      <div class="team-name">Team Member 4</div>
-      <div class="team-role">Systems Integration</div>
+      <div class="team-name">Suriyapperuma H.D.</div>
+      <div class="E-number">E/21/453</div>
     </div>
   </div>
 </section>
