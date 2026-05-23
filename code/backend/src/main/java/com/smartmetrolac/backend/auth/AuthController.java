@@ -1,6 +1,8 @@
 package com.smartmetrolac.backend.auth;
 
 import com.smartmetrolac.backend.config.JwtUtil;
+import com.smartmetrolac.backend.entity.UserEntity;
+import com.smartmetrolac.backend.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,10 +23,13 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final UserRepository userRepository;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil,
+                          UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/login")
@@ -43,7 +48,12 @@ public class AuthController {
                     .findFirst()
                     .orElse("");
 
-            String token = jwtUtil.generateToken(username, role);
+            // Load the entity so we can read mustChangePassword from the database.
+            // orElseThrow is safe here — the user just authenticated successfully.
+            UserEntity user = userRepository.findByUsername(username)
+                    .orElseThrow();
+
+            String token = jwtUtil.generateToken(username, role, user.isMustChangePassword());
 
             return ResponseEntity.ok(Map.of("token", token));
 
