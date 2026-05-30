@@ -53,7 +53,7 @@ public class AuthController {
             UserEntity user = userRepository.findByUsername(username)
                     .orElseThrow();
 
-            String token = jwtUtil.generateToken(username, role, user.isMustChangePassword());
+            String token = jwtUtil.generateToken(username, role, user.isMustChangePassword(), user.getId());
 
             return ResponseEntity.ok(Map.of("token", token));
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Navigate } from 'react-router-dom'
-import { getAlerts, getUnresolvedAlerts, resolveAlert } from '../../api/alertApi'
+import { getAlerts, getUnresolvedAlerts } from '../../api/alertApi'
 
 // Collection center ID is fixed at 1 for the current implementation.
 const CENTER_ID = 1
@@ -28,8 +28,7 @@ function severityColors(severity) {
 }
 
 function AlertManagementPage() {
-  // Pull both isAuthenticated and user so we can read user.userId for resolving.
-  const { isAuthenticated, user } = useSelector((state) => state.auth)
+  const { isAuthenticated } = useSelector((state) => state.auth)
 
   const [alerts,      setAlerts]      = useState([])
   const [loading,     setLoading]     = useState(true)
@@ -37,13 +36,6 @@ function AlertManagementPage() {
 
   // 'all' | 'unresolved' — changing this triggers a re-fetch via useEffect.
   const [filter,      setFilter]      = useState('all')
-
-  // Inline feedback shown above the table after a resolve action.
-  const [successMsg,  setSuccessMsg]  = useState('')
-  const [actionError, setActionError] = useState('')
-
-  // ID of the alert currently being resolved — drives per-row button state.
-  const [resolvingId, setResolvingId] = useState(null)
 
   // Re-fetch whenever the filter changes (also runs on mount).
   useEffect(() => {
@@ -76,26 +68,6 @@ function AlertManagementPage() {
     if (newFilter !== filter) setFilter(newFilter)
   }
 
-  // ── Resolve action ─────────────────────────────────────────────────────────
-
-  async function handleResolve(alert) {
-    // Track which row is loading by storing its ID.
-    setResolvingId(alert.id)
-    setSuccessMsg('')
-    setActionError('')
-    try {
-      // user.userId identifies the currently logged-in CC admin.
-      await resolveAlert(alert.id, user.userId)
-      setSuccessMsg('Alert resolved successfully')
-      // Refresh list so the row updates to show resolved state.
-      await loadAlerts()
-    } catch {
-      setActionError('Failed to resolve alert.')
-    } finally {
-      setResolvingId(null)
-    }
-  }
-
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
@@ -118,10 +90,6 @@ function AlertManagementPage() {
         </button>
       </div>
 
-      {/* ── Feedback messages ─────────────────────────────────────────────── */}
-      {successMsg  && <p style={successMsgStyle}>{successMsg}</p>}
-      {actionError && <p style={actionErrorStyle}>{actionError}</p>}
-
       {/* ── Alert table ───────────────────────────────────────────────────── */}
       <section style={sectionStyle}>
         {error ? (
@@ -135,54 +103,38 @@ function AlertManagementPage() {
             <table style={tableStyle}>
               <thead>
                 <tr>
-                  {['Type', 'Severity', 'Message', 'Date', 'Resolved', 'Resolved By', 'Action'].map((h) => (
+                  {['Type', 'Severity', 'Message', 'Date', 'Resolved', 'Resolved By'].map((h) => (
                     <th key={h} style={thStyle}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {alerts.map((alert) => {
-                  const isResolving = resolvingId === alert.id
-                  return (
-                    <tr key={alert.id} style={trStyle}>
+                {alerts.map((alert) => (
+                  <tr key={alert.id} style={trStyle}>
 
-                      <td style={tdStyle}>{alert.alertType}</td>
+                    <td style={tdStyle}>{alert.alertType}</td>
 
-                      <td style={tdStyle}>
-                        <span style={{ ...badgeBaseStyle, ...severityColors(alert.severity) }}>
-                          {alert.severity}
-                        </span>
-                      </td>
+                    <td style={tdStyle}>
+                      <span style={{ ...badgeBaseStyle, ...severityColors(alert.severity) }}>
+                        {alert.severity}
+                      </span>
+                    </td>
 
-                      <td style={tdStyle}>{alert.message}</td>
+                    <td style={tdStyle}>{alert.message}</td>
 
-                      <td style={tdStyle}>{formatDateTime(alert.createdDate)}</td>
+                    <td style={tdStyle}>{formatDateTime(alert.createdDate)}</td>
 
-                      {/* Green for resolved, red for unresolved */}
-                      <td style={tdStyle}>
-                        <span style={alert.resolved ? resolvedYesStyle : resolvedNoStyle}>
-                          {alert.resolved ? 'Yes' : 'No'}
-                        </span>
-                      </td>
+                    {/* Green for resolved, red for unresolved */}
+                    <td style={tdStyle}>
+                      <span style={alert.resolved ? resolvedYesStyle : resolvedNoStyle}>
+                        {alert.resolved ? 'Yes' : 'No'}
+                      </span>
+                    </td>
 
-                      <td style={tdStyle}>{alert.resolvedByUsername ?? '-'}</td>
+                    <td style={tdStyle}>{alert.resolvedByUsername ?? '-'}</td>
 
-                      {/* Resolve button only appears for unresolved alerts */}
-                      <td style={tdStyle}>
-                        {!alert.resolved && (
-                          <button
-                            onClick={() => handleResolve(alert)}
-                            disabled={isResolving}
-                            style={isResolving ? resolveBtnLoadingStyle : resolveBtnStyle}
-                          >
-                            {isResolving ? '...' : 'Resolve'}
-                          </button>
-                        )}
-                      </td>
-
-                    </tr>
-                  )
-                })}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -232,26 +184,6 @@ const activeFilterBtnStyle = {
   backgroundColor: 'var(--color-primary)',
   color: '#ffffff',
   border: '1px solid var(--color-primary)',
-}
-
-const successMsgStyle = {
-  fontSize: '0.9rem',
-  color: 'var(--color-success)',
-  backgroundColor: '#F0FDF4',
-  border: '1px solid #BBF7D0',
-  borderRadius: 'var(--radius-md)',
-  padding: '0.6rem 1rem',
-  margin: 0,
-}
-
-const actionErrorStyle = {
-  fontSize: '0.9rem',
-  color: 'var(--color-danger)',
-  backgroundColor: 'var(--color-danger-light)',
-  border: '1px solid #FECACA',
-  borderRadius: 'var(--radius-md)',
-  padding: '0.6rem 1rem',
-  margin: 0,
 }
 
 const sectionStyle = {
@@ -317,29 +249,6 @@ const resolvedYesStyle = {
 const resolvedNoStyle = {
   color: 'var(--color-danger)',
   fontWeight: '600',
-}
-
-// Base shared by Resolve button and its loading variant.
-const resolveBtnBase = {
-  padding: '0.3rem 0.7rem',
-  borderRadius: 'var(--radius-sm)',
-  fontSize: '0.8rem',
-  fontWeight: '500',
-  backgroundColor: 'transparent',
-}
-
-const resolveBtnStyle = {
-  ...resolveBtnBase,
-  color: 'var(--color-success)',
-  border: '1px solid var(--color-success)',
-  cursor: 'pointer',
-}
-
-const resolveBtnLoadingStyle = {
-  ...resolveBtnBase,
-  color: 'var(--color-text-muted)',
-  border: '1px solid var(--color-border)',
-  cursor: 'not-allowed',
 }
 
 export default AlertManagementPage
