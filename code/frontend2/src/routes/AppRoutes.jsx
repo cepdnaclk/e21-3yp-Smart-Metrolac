@@ -12,11 +12,11 @@ import FarmerManagementPage from '../pages/center/FarmerManagementPage'
 import InvoiceListPage from '../pages/center/InvoiceListPage'
 import PaymentListPage from '../pages/center/PaymentListPage'
 import AlertManagementPage from '../pages/center/AlertManagementPage'
+import FarmerPaymentPage from '../pages/farmer/FarmerPaymentPage'
+import CenterDashboard from '../pages/center/CenterDashboard'
 
 // ── Placeholder pages (will be replaced with real components later) ──────────
-const Unauthorized     = () => <div>Access Denied</div>
-const CenterDashboard  = () => <div>Center Dashboard - Coming Soon</div>
-const FarmerPayments   = () => <div>Farmer Payments - Coming Soon</div>
+const Unauthorized = () => <div>Access Denied</div>
 
 function AppRoutes() {
   return (
@@ -116,7 +116,7 @@ function AppRoutes() {
           path="/farmer/payments"
           element={
             <ProtectedRoute allowedRoles={['farmer']}>
-              <FarmerLayout><FarmerPayments /></FarmerLayout>
+              <FarmerLayout><FarmerPaymentPage /></FarmerLayout>
             </ProtectedRoute>
           }
         />

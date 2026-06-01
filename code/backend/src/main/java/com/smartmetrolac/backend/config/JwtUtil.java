@@ -24,8 +24,8 @@ public class JwtUtil {
         this.expirationMilliseconds = expirationMilliseconds;
     }
 
-    // Full token generation — includes must_change_password claim.
-    public String generateToken(String username, String role, boolean mustChangePassword) {
+    // Full token generation — includes role, mustChangePassword, and userId claims.
+    public String generateToken(String username, String role, boolean mustChangePassword, Long userId) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMilliseconds);
 
@@ -33,17 +33,16 @@ public class JwtUtil {
                 .subject(username)
                 .claim("role", role)
                 .claim("must_change_password", mustChangePassword)
+                .claim("userId", userId)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(secretKey)
                 .compact();
     }
 
-    // Backwards-compatible overload — delegates with mustChangePassword = false.
-    // Existing callers (AuthController) compile unchanged; update them to pass
-    // the real value from the User entity when ready.
+    // Backwards-compatible overload — delegates with mustChangePassword = false, userId = null.
     public String generateToken(String username, String role) {
-        return generateToken(username, role, false);
+        return generateToken(username, role, false, null);
     }
 
     public boolean validateToken(String token) {
