@@ -11,6 +11,8 @@
 #include <LittleFS.h>
 #include <HTTPClient.h>
 #include <Preferences.h>
+#include <ThreeWire.h>  
+#include <RtcDS1302.h>
 
 // --- NTP TIME SETTINGS (Sri Lanka +5:30) ---
 const char* ntpServer = "pool.ntp.org";
@@ -20,6 +22,7 @@ const int   daylightOffset_sec = 0; // No daylight saving time
 // NEW: Offline Sync Variables
 const char* BACKLOG_FILE = "/backlog.txt";
 unsigned long lastSyncAttempt = 0;
+unsigned long lastClockUpdate = 0;
 
 // ==========================================
 // 1. NETWORK & MQTT CREDENTIALS
@@ -52,6 +55,10 @@ const int LOADCELL_SCK_PIN = 19;
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 HX711 scale;
+
+// ThreeWire myWire(DAT/IO, CLK/SCLK, RST/CE);
+ThreeWire myWire(2, 15, 23); 
+RtcDS1302<ThreeWire> Rtc(myWire);
 
 // --- CALIBRATION CONSTANTS ---
 float neutralVoltage = 2.33;         // pH 7.0 baseline
@@ -113,6 +120,24 @@ String alertAction = "";
 // --- NEW: Non-Blocking Network Timer ---
 unsigned long lastReconnectAttempt = 0;
 
+void syncRTCwithNTP() {
+  struct tm timeinfo;
+  if (getLocalTime(&timeinfo)) {
+    RtcDateTime preciseTime = RtcDateTime(
+        timeinfo.tm_year + 1900,
+        timeinfo.tm_mon + 1,
+        timeinfo.tm_mday,
+        timeinfo.tm_hour,
+        timeinfo.tm_min,
+        timeinfo.tm_sec
+    );
+    Rtc.SetDateTime(preciseTime);
+    Serial.println("SUCCESS: DS1302 RTC Synced with Internet Time!");
+  } else {
+    Serial.println("WARNING: Offline mode. Relying on DS1302 battery backup.");
+  }
+}
+
 // ==========================================
 // 4. MAIN SETUP
 // ==========================================
@@ -148,6 +173,12 @@ void setup() {
   // NO scale.tare()! We are using differential measurement.
   
   client.setServer(mqtt_server, mqtt_port);
+
+  // Initialize the DS1302 RTC
+  Rtc.Begin();
+  if (!Rtc.GetIsRunning()) Rtc.SetIsRunning(true);
+  if (Rtc.GetIsWriteProtected()) Rtc.SetIsWriteProtected(false);
+  
   Serial.println("--- SMART-METROLAC MASTER BOOT ---");
 }
 
@@ -161,6 +192,15 @@ void loop() {
     lastSyncAttempt = millis();
     if (currentState == STATE_AUTH && supplierID.length() == 0) {
       syncOfflineData();
+    }
+  }
+
+  // --- NEW: LIVE CLOCK TICKER ---
+  if (millis() - lastClockUpdate > 1000) {
+    lastClockUpdate = millis();
+    // Only tick the clock on the Standby and Volume Input screens
+    if (currentState == STATE_AUTH || currentState == STATE_VOLUME) {
+      drawStatusBar();
     }
   }
 
@@ -185,6 +225,12 @@ void loop() {
         if (WiFi.status() == WL_CONNECTED) {
           lcd.print(" [WIFI: OK]         ");
           configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+
+          // --- NEW SYNC LOGIC ---
+          delay(1500); // Give NTP a moment to fetch the time
+          syncRTCwithNTP(); 
+          // ----------------------
+
         } else {
           lcd.print(" [WIFI: OFFLINE]    ");
         }
@@ -484,9 +530,24 @@ void fetchDailyPrice() {
 }
 
 void drawStatusBar() {
-  lcd.setCursor(0, 0); lcd.print("SMART-METROLAC ");
-  if (WiFi.status() == WL_CONNECTED) lcd.print("   ON");
-  else lcd.print("  OFF");
+  RtcDateTime now = Rtc.GetDateTime();
+  char statusBuffer[21];
+  
+  // Format Wi-Fi status to always take exactly 3 characters so it aligns perfectly
+  String wifiStatus = (WiFi.status() == WL_CONNECTED) ? "ON " : "OFF";
+
+  if (now.IsValid()) {
+    // Format: "DD/MM/YYYY HH:MM OFF" (Exactly 20 chars)
+    snprintf(statusBuffer, sizeof(statusBuffer), "%02d/%02d/%04d %02d:%02d %s",
+             now.Day(), now.Month(), now.Year(),
+             now.Hour(), now.Minute(), wifiStatus.c_str());
+  } else {
+    // Failsafe just in case the battery dies
+    snprintf(statusBuffer, sizeof(statusBuffer), "SMART-METROLAC   %s", wifiStatus.c_str());
+  }
+
+  lcd.setCursor(0, 0); // Only target the top row
+  lcd.print(statusBuffer);
 }
 
 float getStableWeight() {
@@ -572,13 +633,19 @@ void playWarning() { for (int i=0; i<3; i++) { tone(BUZZER_PIN, 800, 300); delay
 void playSuccess() { tone(BUZZER_PIN, 1200, 100); delay(100); tone(BUZZER_PIN, 1600, 100); delay(100); tone(BUZZER_PIN, 2400, 300); }
 
 String getLiveTime() {
-  struct tm timeinfo;
-  if (!getLocalTime(&timeinfo)) {
-    return "1970-01-01T00:00:00"; // Fallback if time fails to sync
+  RtcDateTime now = Rtc.GetDateTime();
+  
+  // Failsafe in case the RTC gets unplugged or battery dies
+  if (!now.IsValid()) {
+    return "1970-01-01T00:00:00"; 
   }
+
   char timeStringBuff[30];
   // Formats exactly like: "2026-04-26T14:30:00"
-  strftime(timeStringBuff, sizeof(timeStringBuff), "%Y-%m-%dT%H:%M:%S", &timeinfo);
+  snprintf(timeStringBuff, sizeof(timeStringBuff), "%04d-%02d-%02dT%02d:%02d:%02d",
+           now.Year(), now.Month(), now.Day(),
+           now.Hour(), now.Minute(), now.Second());
+           
   return String(timeStringBuff);
 }
 
