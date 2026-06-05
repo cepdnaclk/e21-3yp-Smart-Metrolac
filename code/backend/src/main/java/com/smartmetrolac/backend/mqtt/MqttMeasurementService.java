@@ -1,18 +1,27 @@
 package com.smartmetrolac.backend.mqtt;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.smartmetrolac.backend.entity.*;
-import com.smartmetrolac.backend.repository.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smartmetrolac.backend.entity.Alert;
+import com.smartmetrolac.backend.entity.CollectionCenter;
+import com.smartmetrolac.backend.entity.Device;
+import com.smartmetrolac.backend.entity.Farmer;
+import com.smartmetrolac.backend.entity.Invoice;
+import com.smartmetrolac.backend.repository.AlertRepository;
+import com.smartmetrolac.backend.repository.CollectionCenterRepository;
+import com.smartmetrolac.backend.repository.DeviceRepository;
+import com.smartmetrolac.backend.repository.FarmerRepository;
+import com.smartmetrolac.backend.repository.InvoiceRepository;
 
 @Service
 public class MqttMeasurementService {
@@ -39,19 +48,17 @@ public class MqttMeasurementService {
     }
 
     /**
-     * Expected MQTT JSON payload structure (all lowercase snake_case):
+     * Expected MQTT JSON payload structure:
      * {
-     *   "temperature": 29.4,
-     *   "ph": 7.1,
-     *   "ph_alert": "normal" | "warning" | "critical",
-     *   "tds_value": 1200,
-     *   "tds_alert": "normal" | "warning" | "critical",
-     *   "drc_value": 32.1,
-     *   "litres": 12.5,
      *   "farmer_id": 1,
      *   "collection_center_id": 1,
-     *   "company_id": 1,
-     *   "payment_value": 3410.62
+     *   "drc": 35.50,
+     *   "total_litres": 10.00,
+     *   "total_amount": 2500.00,
+     *   "temperature": 27.00,
+     *   "ph_status": "normal",
+     *   "tds_status": "normal",
+     *   "measurement_datetime": "2026-04-18T10:00:00"
      * }
      */
     @Transactional
@@ -82,18 +89,18 @@ public class MqttMeasurementService {
             Device device = resolveDeviceForCenter(center);
 
             BigDecimal temperature = decimalValue(root, "temperature");
-            BigDecimal drc = decimalValue(root, "drc_value");
-            BigDecimal litres = decimalValue(root, "litres");
-            BigDecimal payment = decimalValue(root, "payment_value");
+            BigDecimal drc = decimalValue(root, "drc", "drc_value");
+            BigDecimal litres = decimalValue(root, "total_litres", "litres");
+            BigDecimal payment = decimalValue(root, "total_amount", "payment_value");
 
-            String phAlert = textOrNull(root, "ph_alert");
-            String tdsAlert = textOrNull(root, "tds_alert");
+            String phAlert = textOrNull(root, "ph_status", "ph_alert");
+            String tdsAlert = textOrNull(root, "tds_status", "tds_alert");
 
             Invoice invoice = new Invoice();
             invoice.setFarmer(farmer);
             invoice.setCollectionCenter(center);
             invoice.setDevice(device);
-            invoice.setMeasurementDateTime(LocalDateTime.now());
+            invoice.setMeasurementDateTime(parseDateTime(root));
             invoice.setDrc(drc);
             invoice.setTotalLitres(litres);
             invoice.setTotalAmount(payment);
@@ -140,15 +147,36 @@ public class MqttMeasurementService {
         alertRepository.save(alert);
     }
 
-    private BigDecimal decimalValue(JsonNode root, String field) {
-        if (root.hasNonNull(field)) {
-            return root.get(field).decimalValue();
+    private BigDecimal decimalValue(JsonNode root, String... fields) {
+        for (String field : fields) {
+            if (root.hasNonNull(field)) {
+                return root.get(field).decimalValue();
+            }
         }
         return BigDecimal.ZERO;
     }
 
-    private String textOrNull(JsonNode root, String field) {
-        return root.hasNonNull(field) ? root.get(field).asText() : null;
+    private String textOrNull(JsonNode root, String... fields) {
+        for (String field : fields) {
+            if (root.hasNonNull(field)) {
+                return root.get(field).asText();
+            }
+        }
+        return null;
+    }
+
+    private LocalDateTime parseDateTime(JsonNode root) {
+        String[] fields = {"measurement_datetime", "measurementDateTime"};
+        for (String field : fields) {
+            if (root.hasNonNull(field)) {
+                try {
+                    return LocalDateTime.parse(root.get(field).asText());
+                } catch (Exception e) {
+                    log.warn("Failed to parse {} from payload, falling back to now()", field);
+                }
+            }
+        }
+        return LocalDateTime.now();
     }
 
     private long readLong(JsonNode root, String... fields) {
