@@ -47,9 +47,6 @@ PubSubClient client(espClient);
 
 const int period = 30;
 
-WiFiClientSecure espClient;
-PubSubClient client(espClient);
-
 // ==========================================
 // 2. HARDWARE DEFINITIONS & CALIBRATION
 // ==========================================
@@ -183,9 +180,7 @@ void setup() {
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
   scale.set_scale(weightCalibration);
   // NO scale.tare()! We are using differential measurement.
-  
-  setup_wifi(); // Connect to Wi-Fi
-  
+    
   // NEW: Tell the ESP32 to accept the TLS connection without verifying the root CA
   espClient.setInsecure();
 
