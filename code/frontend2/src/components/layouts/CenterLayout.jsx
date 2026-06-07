@@ -133,8 +133,7 @@ function CenterLayout({ children }) {
       {/* ── Sidebar ────────────────────────────────────────────────────────── */}
       <aside style={sidebarStyle}>
         <div style={sidebarHeaderStyle}>
-          <p style={appNameStyle}>Smart-Metrolac</p>
-          <p style={subtitleStyle}>Collection Center Admin</p>
+          <img src="/logo.png" alt="Smart-Metrolac" style={{ width: '100%', objectFit: 'contain', display: 'block' }} />
         </div>
 
         <nav style={navStyle}>

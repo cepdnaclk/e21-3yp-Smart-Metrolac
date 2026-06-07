@@ -132,8 +132,7 @@ function AdminLayout({ children }) {
       {/* ── Sidebar ────────────────────────────────────────────────────────── */}
       <aside style={sidebarStyle}>
         <div style={sidebarHeaderStyle}>
-          <p style={appNameStyle}>Smart-Metrolac</p>
-          <p style={subtitleStyle}>Company Admin</p>
+          <img src="/logo.png" alt="Smart-Metrolac" style={{ width: '100%', objectFit: 'contain', display: 'block' }} />
         </div>
 
         {/* Nav links — NavLink automatically sets isActive when the URL matches. */}
