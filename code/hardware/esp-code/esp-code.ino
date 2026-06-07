@@ -184,7 +184,12 @@ void setup() {
   scale.set_scale(weightCalibration);
   // NO scale.tare()! We are using differential measurement.
   
-  client.setServer(mqtt_server, mqtt_port);
+  setup_wifi(); // Connect to Wi-Fi
+  
+  // NEW: Tell the ESP32 to accept the TLS connection without verifying the root CA
+  espClient.setInsecure();
+
+  client.setServer(mqtt_server, mqtt_port); // client.setCallback(callback); // Keep this if you have a callback for receiving prices!
 
   // Initialize the DS1302 RTC
   Rtc.Begin();
