@@ -5,6 +5,7 @@
 #include <DallasTemperature.h>
 #include <HX711.h>
 #include <WiFi.h>
+#include <WiFiClientSecure.h>
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <time.h> 
@@ -29,9 +30,20 @@ unsigned long lastClockUpdate = 0;
 // ==========================================
 const char* ssid = "Mano-Redmi";        
 const char* password = "12345678"; 
-const char* mqtt_server = "10.65.152.180";  // Change to your laptop's IP
-const int mqtt_port = 1883;
+// const char* mqtt_server = "MY_IP_ADDRESS";  // Change to your laptop's IP
+// const int mqtt_port = 1883;
+// const char* mqtt_topic = "smartmetrolac/device01/telemetry";
+
+// --- HIVEMQ CLOUD SETTINGS ---
+const char* mqtt_server = "YOUR_CLUSTER_URL.s1.eu.hivemq.cloud"; // Replace with your HiveMQ URL
+const int mqtt_port = 8883;                                      // Secure Port MUST be 8883
+const char* mqtt_username = "YOUR_HIVEMQ_USERNAME";              // Replace with your DB/Hive username
+const char* mqtt_password = "YOUR_HIVEMQ_PASSWORD";              // Replace with your DB/Hive password
 const char* mqtt_topic = "smartmetrolac/device01/telemetry";
+
+// Initialize the secure client instead of standard client
+WiFiClientSecure espClient; 
+PubSubClient client(espClient);
 
 const int period = 30;
 
