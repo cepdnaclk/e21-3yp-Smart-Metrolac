@@ -47,7 +47,7 @@ PubSubClient client(espClient);
 
 const int period = 30;
 
-WiFiClient espClient;
+WiFiClientSecure espClient;
 PubSubClient client(espClient);
 
 // ==========================================
@@ -617,8 +617,10 @@ void publishTelemetry(float drc, float litres, float payment) {
   bool publishSuccess = false;
   if (WiFi.status() == WL_CONNECTED) {
     if (!client.connected()) {
-      Serial.print("Connecting to MQTT...");
-      client.connect("ESP32_SmartMetrolac");
+      Serial.print("Connecting to HiveMQ...");
+      // NEW: Generate a random ID and connect using HiveMQ Username/Password
+      String clientId = "SmartMetrolac-" + String(random(0xffff), HEX);
+      client.connect(clientId.c_str(), mqtt_username, mqtt_password);
     }
     if (client.connected() && client.publish(mqtt_topic, jsonBuffer)) {
       publishSuccess = true;
@@ -672,7 +674,9 @@ void syncOfflineData() {
   // Warning: If broker is offline, this next line blocks for ~3-5 seconds.
   // Because we only run this in STATE_AUTH when idle, it won't interrupt the user.
   if (!client.connected()) {
-    if (!client.connect("ESP32_SmartMetrolac")) return; 
+    // NEW: Generate a random ID and connect using HiveMQ Username/Password
+    String clientId = "SmartMetrolac-" + String(random(0xffff), HEX);
+    if (!client.connect(clientId.c_str(), mqtt_username, mqtt_password)) return;
   }
 
   if (!LittleFS.exists(BACKLOG_FILE)) return; 
