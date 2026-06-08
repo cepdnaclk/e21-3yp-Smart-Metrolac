@@ -19,13 +19,13 @@ function AdminLayout({ children }) {
   const containerStyle = {
     display: 'flex',
     flexDirection: 'row',
-    minHeight: '100vh',
+    height: '100vh',
+    overflow: 'hidden',
     fontFamily: 'var(--font-sans)',
   }
 
   const sidebarStyle = {
     width: '240px',
-    minHeight: '100vh',
     backgroundColor: 'var(--color-primary)',
     display: 'flex',
     flexDirection: 'column',
@@ -56,6 +56,8 @@ function AdminLayout({ children }) {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.25rem',
+    overflowY: 'auto',
+    minHeight: 0,
   }
 
   // Base style shared by all nav links; active overrides are applied via NavLink className.
@@ -94,7 +96,9 @@ function AdminLayout({ children }) {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    minWidth: 0,  // prevents flex children from overflowing
+    minWidth: 0,
+    overflow: 'hidden',
+    minHeight: 0,
   }
 
   const topbarStyle = {
@@ -124,6 +128,7 @@ function AdminLayout({ children }) {
     backgroundColor: 'var(--color-bg)',
     padding: '1.5rem',
     overflowY: 'auto',
+    minHeight: 0,
   }
 
   return (

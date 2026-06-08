@@ -21,13 +21,13 @@ function CenterLayout({ children }) {
   const containerStyle = {
     display: 'flex',
     flexDirection: 'row',
-    minHeight: '100vh',
+    height: '100vh',
+    overflow: 'hidden',
     fontFamily: 'var(--font-sans)',
   }
 
   const sidebarStyle = {
     width: '240px',
-    minHeight: '100vh',
     backgroundColor: 'var(--color-primary)',
     display: 'flex',
     flexDirection: 'column',
@@ -58,6 +58,8 @@ function CenterLayout({ children }) {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.25rem',
+    overflowY: 'auto',
+    minHeight: 0,
   }
 
   function navLinkStyle({ isActive }) {
@@ -96,6 +98,8 @@ function CenterLayout({ children }) {
     display: 'flex',
     flexDirection: 'column',
     minWidth: 0,
+    overflow: 'hidden',
+    minHeight: 0,
   }
 
   const topbarStyle = {
@@ -125,6 +129,7 @@ function CenterLayout({ children }) {
     backgroundColor: 'var(--color-bg)',
     padding: '1.5rem',
     overflowY: 'auto',
+    minHeight: 0,
   }
 
   return (
