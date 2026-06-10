@@ -72,8 +72,8 @@ RtcDS1302<ThreeWire> Rtc(myWire);
 // --- CALIBRATION CONSTANTS ---
 float neutralVoltage = 2.33;         // pH 7.0 baseline
 float tdsKValue = 1.0;               // TDS Calibration
-float weightCalibration = 1360.0;    // Load Cell Baseline
-const float PLUMMET_VOLUME = 5.5;    // Must match actual displaced volume in cm3
+float weightCalibration = 1840.0;    // Load Cell Baseline
+const float PLUMMET_VOLUME = 5.6;    // Must match actual displaced volume in cm3
 
 // --- REMOVE THIS LINE ---
 // const float PRICE_PER_KG = 450.0; 
@@ -391,14 +391,38 @@ void loop() {
           }
         }
 
-        // --- MATH PHASE ---
-        float displacedMass = weightAirT1 - finalWeight; 
-        float density = displacedMass / PLUMMET_VOLUME;
-        float metrolacReading = (1.0067 - density) / 0.00004467;
-        float drcRaw = 0.1 + (0.002 * metrolacReading) - (0.01 * (finalTemp - 29.0));
-        
-        finalDRC = round(drcRaw * 100.0) / 100.0; // Convert to %
-        if (finalDRC < 0) finalDRC = 0.0;
+                // --- MATH PHASE ---
+        // Step 1: Calculate latex density using Archimedes' principle
+        // displacedMass = apparent weight loss of plummet when submerged in latex
+        // PLUMMET_VOLUME must be calibrated in cm3 (= mL) by submerging in water
+        float displacedMass = weightAirT1 - finalWeight; // grams
+        float rho_latex_raw = displacedMass / PLUMMET_VOLUME; // g/cm3
+
+        // Step 2: Temperature correction
+        // Normalise latex density to 29°C standard (RRI chart reference temperature)
+        // Latex thermal expansion coefficient ~0.00063 per °C
+        // At higher temps, latex expands → density drops → we correct it back up to 29°C equivalent
+        float alpha = 0.00063;
+        float rho_latex = rho_latex_raw * (1.0 + alpha * (finalTemp - 29.0));
+
+        // Step 3: Calculate DRC from latex density using the two-component mixture model
+        // Rubber density (d_r) = 0.913 g/cm3
+        // Latex serum density (d_s) = 1.025 g/cm3
+        // Formula derived from: 1/rho_latex = DRC/d_r + (1-DRC)/d_s
+        const float d_r = 0.913;
+        const float d_s = 1.025;
+        float drcRaw = ((1.0 / rho_latex) - (1.0 / d_s)) / ((1.0 / d_r) - (1.0 / d_s));
+
+        // Debug output so you can verify on Serial Monitor
+        Serial.print("Displaced Mass: "); Serial.print(displacedMass, 3); Serial.println(" g");
+        Serial.print("Raw Latex Density: "); Serial.print(rho_latex_raw, 4); Serial.println(" g/cm3");
+        Serial.print("Temp-Corrected Density: "); Serial.print(rho_latex, 4); Serial.println(" g/cm3");
+        Serial.print("DRC Raw: "); Serial.print(drcRaw * 100.0, 2); Serial.println(" %");
+
+        // Step 4: Convert to percentage and clamp to valid range
+        finalDRC = drcRaw * 100.0;
+        if (finalDRC < 0.0)  finalDRC = 0.0;
+        if (finalDRC > 60.0) finalDRC = 60.0; // 60% is unrealistically high, likely a hardware error
 
         playDoubleBeep(); 
         currentState = STATE_RAW_DATA; 
