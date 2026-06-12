@@ -111,6 +111,20 @@ function CenterLayout({ children }) {
     minHeight: 0,
   }
 
+  const topbarStyle = {
+    position: 'sticky',
+    top: 0,
+    zIndex: 20,
+    height: '64px',
+    backgroundColor: '#F2F7EC',
+    borderBottom: '1px solid #E3EDD8',
+    boxShadow: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '0 32px',
+    flexShrink: 0,
+  }
   const contentStyle = {
     flex: 1,
     backgroundColor: 'var(--color-bg)',
@@ -147,39 +161,42 @@ function CenterLayout({ children }) {
       <div style={mainStyle}>
 
         {/* ── Topbar ─────────────────────────────────────────────────────── */}
-        <header className="sticky top-0 z-20 h-16 bg-white border-b border-gray-100 shadow-sm flex items-center justify-between px-8 flex-shrink-0">
+        <header style={topbarStyle}>
 
           {/* Left: accent dot · role title · chevron · page name */}
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-[#42C23D]" />
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#6B7280]">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#42C23D' }} />
+            <span style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#5C7A45' }}>
               Collection Center
             </span>
-            <ChevronRight size={14} color="#D1D5DB" />
-            <span className="text-base font-semibold text-[#111827]">
+            <ChevronRight size={14} color="#A9BF93" />
+            <span style={{ fontSize: '16px', fontWeight: 600, color: '#173404' }}>
               {pageName}
             </span>
           </div>
 
           {/* Right: bell · divider · user chip */}
-          <div className="flex items-center gap-3">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
 
-            <button className="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-gray-100 transition-colors cursor-pointer">
-              <Bell size={18} color="#6B7280" />
+            <button
+              className="hover:bg-[#E3EDD8]"
+              style={{ width: '36px', height: '36px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', transition: 'background-color 0.15s' }}
+            >
+              <Bell size={18} color="#5C7A45" />
             </button>
 
-            <div className="w-px h-6 bg-gray-200" />
+            <div style={{ width: '1px', height: '24px', backgroundColor: '#D5E3C4' }} />
 
-            <div className="flex items-center gap-3 px-3 py-1.5 rounded-xl hover:bg-gray-50 cursor-pointer transition-colors">
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
-                style={{ background: 'linear-gradient(135deg, #173404 0%, #2d5a0c 100%)', color: '#EAF3DE' }}
-              >
+            <div
+              className="hover:bg-[#E9F1DF]"
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', transition: 'background-color 0.15s' }}
+            >
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, flexShrink: 0, background: 'linear-gradient(135deg, #173404 0%, #2d5a0c 100%)', color: '#EAF3DE' }}>
                 {user?.username?.charAt(0).toUpperCase()}
               </div>
-              <div className="flex flex-col items-start">
-                <span className="text-sm font-semibold text-[#111827] leading-tight">{user?.username}</span>
-                <span className="text-xs text-[#6B7280] leading-tight">{getRoleLabel(user?.username)}</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: '14px', fontWeight: 600, color: '#173404', lineHeight: 1.25 }}>{user?.username}</span>
+                <span style={{ fontSize: '12px', color: '#5C7A45', lineHeight: 1.25 }}>{getRoleLabel(user?.username)}</span>
               </div>
             </div>
 
