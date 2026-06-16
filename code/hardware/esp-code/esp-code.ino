@@ -284,7 +284,7 @@ void loop() {
         lcd.clear(); drawStatusBar();
         lcd.setCursor(0, 1); lcd.print("Enter Volume (L):   ");
         lcd.setCursor(0, 2); lcd.print("> " + batchVolumeStr);
-        lcd.setCursor(0, 3); lcd.print("[A]=Confirm");
+        lcd.setCursor(0, 3); lcd.print("[A]Ok [B]Del [D]Back");
         needsRedraw = false;
       }
       if (key) {
@@ -294,7 +294,15 @@ void loop() {
           batchVolume = batchVolumeStr.toFloat();
           playConfirm(); currentState = STATE_INSTRUCT_AIR; needsRedraw = true; 
         } 
-        else if (key == 'C') { batchVolumeStr = ""; needsRedraw = true; }
+        else if (key == 'B' && batchVolumeStr.length() > 0) { 
+            batchVolumeStr.remove(batchVolumeStr.length() - 1); 
+            needsRedraw = true;
+        }
+        else if (key == 'D') {
+            playConfirm();
+            currentState = STATE_AUTH;
+            needsRedraw = true;
+        }
       }
       break;
 
@@ -302,7 +310,7 @@ void loop() {
       if (needsRedraw) {
         lcd.clear(); drawStatusBar();
         lcd.setCursor(0, 1); lcd.print("1. Hang Plummet Dry ");
-        lcd.setCursor(0, 3); lcd.print("Press [A] to Weigh  ");
+        lcd.setCursor(0, 3); lcd.print("[A]=Weigh  [D]=Back");
         needsRedraw = false;
       }
       if (key == 'A') { 
@@ -321,6 +329,11 @@ void loop() {
         currentState = STATE_INSTRUCT_LATEX; 
         needsRedraw = true; 
       }
+      else if (key == 'D') {
+        playConfirm();
+        currentState = STATE_VOLUME;
+        needsRedraw = true;
+      }
       break;
 
     case STATE_INSTRUCT_LATEX:
@@ -328,10 +341,13 @@ void loop() {
         lcd.clear(); drawStatusBar();
         lcd.setCursor(0, 1); lcd.print("2. Dip Plummet &    ");
         lcd.setCursor(0, 2); lcd.print("   Probes in Latex. ");
-        lcd.setCursor(0, 3); lcd.print("Press [A] to Start  ");
+        lcd.setCursor(0, 3); lcd.print("[A]=Start  [D]=Back");
         needsRedraw = false;
       }
       if (key == 'A') { playConfirm(); currentState = STATE_MEASURE_LATEX; needsRedraw = true; }
+      else if (key == 'D') { 
+        playConfirm(); currentState = STATE_INSTRUCT_AIR; needsRedraw = true; 
+      }
       break;
 
     case STATE_MEASURE_LATEX:
@@ -345,6 +361,15 @@ void loop() {
         float phEMA = 0.0;
 
         for (int sec = period; sec > 0; sec--) {
+          //Emergency Abort
+          char abortKey = customKeypad.getKey();
+          if (abortKey == 'D') {
+              playWarning(); // Let them know it was cancelled
+              currentState = STATE_INSTRUCT_LATEX; // Send them back
+              needsRedraw = true;
+              break; // Immediately exit the 30-second loop
+          }
+
           // LCD Update
           lcd.setCursor(0, 2); lcd.print("Time Left: "); 
           if(sec < 10) lcd.print("0"); 
