@@ -15,6 +15,8 @@
 #include <ThreeWire.h>  
 #include <RtcDS1302.h>
 
+bool invoiceCalculated = false;
+
 // --- NTP TIME SETTINGS (Sri Lanka +5:30) ---
 const char* ntpServer = "pool.ntp.org";
 const long  gmtOffset_sec = 19800; // 5.5 hours * 3600 seconds
@@ -521,26 +523,52 @@ void loop() {
       break;
 
     case STATE_INVOICE:
+      // STEP 1: Draw the loading screen FIRST
       if (needsRedraw) {
         lcd.clear();
-        lcd.setCursor(0, 0); lcd.print("Fetching Price..."); // Optional: tell user why it's pausing
+        lcd.setCursor(0, 0); lcd.print("Finalizing Batch...");
+        lcd.setCursor(0, 1); lcd.print("Syncing to Cloud...");
+        lcd.setCursor(0, 2); lcd.print("Please wait...");
         
-        fetchDailyPrice(); // <--- MOVED INSIDE THE GATEKEEPER
+        needsRedraw = false;
+        invoiceCalculated = false; // Reset flag
+      }
 
-        lcd.clear();
-        float payment = batchVolume * finalDRC * pricePerKg; 
+      // STEP 2: Do the heavy network tasks AFTER the screen has updated
+      if (!invoiceCalculated) {
+        delay(50); // Give the LCD physical time to draw the text above
+        
+        // 1. Get the price
+        fetchDailyPrice(); 
+        
+        // 2. Do the math
+        float payment = batchVolume * finalDRC * pricePerKg / 100.0; 
+        
+        // 3. Send the data (or save it to LittleFS if offline)
         publishTelemetry(finalDRC, batchVolume, payment);
 
-        lcd.setCursor(0, 0); lcd.print("ID:" + supplierID); lcd.setCursor(9, 0); lcd.print("Rs"); lcd.print(pricePerKg, 2); lcd.print("/kg");
-        lcd.setCursor(0, 1); lcd.print("DRC: "); lcd.print(finalDRC, 2); lcd.setCursor(13, 1); lcd.print("L:"); lcd.print(batchVolume, 2);
+        // 4. Draw the actual Invoice
+        lcd.clear();
+        // Kept precision lower (0 and 1 decimal) to ensure it fits on a 20-char display
+        lcd.setCursor(0, 0); lcd.print("ID:" + supplierID); lcd.setCursor(9, 0); lcd.print("Rs"); lcd.print(pricePerKg, 0); lcd.print("/kg");
+        lcd.setCursor(0, 1); lcd.print("DRC:"); lcd.print(finalDRC, 1); lcd.setCursor(12, 1); lcd.print("L:"); lcd.print(batchVolume, 1);
         lcd.setCursor(0, 2); lcd.print("PAY: Rs."); lcd.print(payment, 2);
-        lcd.setCursor(0, 3); lcd.print("[*]New User Session ");
-        playSuccess(); needsRedraw = false;
+        lcd.setCursor(0, 3); lcd.print("[*] New Session ");
+        
+        playSuccess(); 
+        invoiceCalculated = true; // Lock this block so we don't spam the network!
       }
-      if (key == '*') {
+
+      // STEP 3: Wait for the farmer to acknowledge and restart
+      if (invoiceCalculated && key == '*') {
         playConfirm(); 
-        supplierID = ""; batchVolumeStr = ""; batchVolume = 0; 
-        currentState = STATE_AUTH; needsRedraw = true;
+        // Reset all variables for the next farmer
+        supplierID = ""; 
+        batchVolumeStr = ""; 
+        batchVolume = 0; 
+        
+        currentState = STATE_AUTH; 
+        needsRedraw = true;
       }
       break;
   }
