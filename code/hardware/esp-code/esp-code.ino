@@ -641,15 +641,29 @@ void drawStatusBar() {
 }
 
 float getStableWeight() {
-  float localEMA = 0.0;
-  bool firstRead = true;
-  for(int i = 0; i < 15; i++) { // 15 readings * 50ms = 750ms
-    float rawWeight = scale.get_units(1);
-    if (firstRead) { localEMA = rawWeight; firstRead = false; } 
-    else { localEMA = (rawWeight * 0.15) + (localEMA * 0.85); }
+  const int N = 20;
+  float readings[N];
+
+  for (int i = 0; i < N; i++) {
+    readings[i] = scale.get_units(1);
     delay(50);
   }
-  return localEMA;
+
+  // Bubble sort ascending
+  for (int i = 0; i < N - 1; i++) {
+    for (int j = i + 1; j < N; j++) {
+      if (readings[i] > readings[j]) {
+        float tmp = readings[i];
+        readings[i] = readings[j];
+        readings[j] = tmp;
+      }
+    }
+  }
+
+  // Average middle 10 (discard 5 lowest and 5 highest)
+  float sum = 0.0;
+  for (int i = 5; i < 15; i++) sum += readings[i];
+  return sum / 10.0;
 }
 
 float getStablePH() {
