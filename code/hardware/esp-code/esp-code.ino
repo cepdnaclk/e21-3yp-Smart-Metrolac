@@ -74,11 +74,8 @@ RtcDS1302<ThreeWire> Rtc(myWire);
 // --- CALIBRATION CONSTANTS ---
 float neutralVoltage = 2.33;         // pH 7.0 baseline
 float tdsKValue = 1.0;               // TDS Calibration
-float weightCalibration = 1760.0;    // Load Cell Baseline
-const float PLUMMET_VOLUME = 5.9;    // Must match actual displaced volume in cm3
-
-// --- REMOVE THIS LINE ---
-// const float PRICE_PER_KG = 450.0; 
+float weightCalibration = 1830.0;    // Load Cell Baseline
+const float PLUMMET_VOLUME = 35.3;   // Must match actual displaced volume in cm3
 
 // --- ADD THESE LINES INSTEAD ---
 Preferences preferences;
