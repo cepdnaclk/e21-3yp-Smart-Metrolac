@@ -32,9 +32,6 @@ unsigned long lastClockUpdate = 0;
 // ==========================================
 const char* ssid = "Mano-Redmi";        
 const char* password = "12345678"; 
-// const char* mqtt_server = "MY_IP_ADDRESS";  // Change to your laptop's IP
-// const int mqtt_port = 1883;
-// const char* mqtt_topic = "smartmetrolac/device01/telemetry";
 
 // --- HIVEMQ CLOUD SETTINGS ---
 const char* mqtt_server = "YOUR_CLUSTER_URL.s1.eu.hivemq.cloud"; // Replace with your HiveMQ URL
@@ -379,7 +376,7 @@ void loop() {
           // Read Sensors
           sensors.requestTemperatures();
           float liveTemp = sensors.getTempCByIndex(0);
-          float liveWeight = getStableWeight(); // Takes ~750ms
+          float liveWeight = getStableWeight(); // Takes ~1000ms
           float livePH = getStablePH();         // Takes ~220ms
           
           // Long-term pH EMA math
@@ -415,38 +412,45 @@ void loop() {
           }
         }
 
-                // --- MATH PHASE ---
-        // Step 1: Calculate latex density using Archimedes' principle
-        // displacedMass = apparent weight loss of plummet when submerged in latex
-        // PLUMMET_VOLUME must be calibrated in cm3 (= mL) by submerging in water
-        float displacedMass = weightAirT1 - finalWeight; // grams
-        float rho_latex_raw = displacedMass / PLUMMET_VOLUME; // g/cm3
+        // --- MATH PHASE ---
+        // Step 1: Displaced mass (Archimedes principle)
+        // NO rounding here — keep full float precision
+        float displacedMass  = weightAirT1 - finalWeight;    // grams
+        float rho_latex_raw  = displacedMass / PLUMMET_VOLUME; // g/cm3
 
-        // Step 2: Temperature correction
-        // Normalise latex density to 29°C standard (RRI chart reference temperature)
-        // Latex thermal expansion coefficient ~0.00063 per °C
-        // At higher temps, latex expands → density drops → we correct it back up to 29°C equivalent
-        float alpha = 0.00063;
-        float rho_latex = rho_latex_raw * (1.0 + alpha * (finalTemp - 29.0));
+        const float d_r = 0.913;   // g/cm3 — rubber density (NIST, unchanged)
+        const float d_s = 1.0127;  // g/cm3 — serum density (CALIBRATED from Lalan data)
+        const float alpha_r = 0.00066; // rubber thermal expansion /degC
+        const float alpha_s = 0.00041; // serum thermal expansion /degC
 
-        // Step 3: Calculate DRC from latex density using the two-component mixture model
-        // Rubber density (d_r) = 0.913 g/cm3
-        // Latex serum density (d_s) = 1.025 g/cm3
-        // Formula derived from: 1/rho_latex = DRC/d_r + (1-DRC)/d_s
-        const float d_r = 0.913;
-        const float d_s = 1.025;
-        float drcRaw = ((1.0 / rho_latex) - (1.0 / d_s)) / ((1.0 / d_r) - (1.0 / d_s));
+        // Iterative temperature correction
+        // DRC-weighted alpha, iterated 3 times until convergence (<0.01% error)
+        // Seed with midpoint alpha
+        float alpha_seed = 0.00053;
+        float rho_iter   = rho_latex_raw * (1.0 + alpha_seed * (finalTemp - 29.0));
+        float drcRaw     = ((1.0 / rho_iter) - (1.0 / d_s)) /
+                           ((1.0 / d_r)      - (1.0 / d_s));
+
+        for (int iter = 0; iter < 3; iter++) {
+          float drc_clamped = drcRaw;
+          if (drc_clamped < 0.0)  drc_clamped = 0.0;
+          if (drc_clamped > 0.60) drc_clamped = 0.60;
+          float alpha_eff = drc_clamped * alpha_r + (1.0 - drc_clamped) * alpha_s;
+          rho_iter = rho_latex_raw * (1.0 + alpha_eff * (finalTemp - 29.0));
+          drcRaw   = ((1.0 / rho_iter) - (1.0 / d_s)) /
+                     ((1.0 / d_r)      - (1.0 / d_s));
+        }
 
         // Debug output so you can verify on Serial Monitor
         Serial.print("Displaced Mass: "); Serial.print(displacedMass, 3); Serial.println(" g");
         Serial.print("Raw Latex Density: "); Serial.print(rho_latex_raw, 4); Serial.println(" g/cm3");
-        Serial.print("Temp-Corrected Density: "); Serial.print(rho_latex, 4); Serial.println(" g/cm3");
+        Serial.print("Temp-Corrected Density: "); Serial.print(rho_iter, 4); Serial.println(" g/cm3");
         Serial.print("DRC Raw: "); Serial.print(drcRaw * 100.0, 2); Serial.println(" %");
 
-        // Step 4: Convert to percentage and clamp to valid range
+        // Convert to percentage and clamp to physical range
         finalDRC = drcRaw * 100.0;
         if (finalDRC < 0.0)  finalDRC = 0.0;
-        if (finalDRC > 60.0) finalDRC = 60.0; // 60% is unrealistically high, likely a hardware error
+        if (finalDRC > 60.0) finalDRC = 60.0;
 
         playDoubleBeep(); 
         currentState = STATE_RAW_DATA; 
