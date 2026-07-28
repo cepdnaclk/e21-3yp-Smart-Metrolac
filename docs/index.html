@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Smart-Metrolac | IoT Rubber Latex Quality System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #050f09;
+    --bg2: #081510;
+    --bg3: #0d1f14;
+    --card: #0f2018;
+    --card2: #132819;
+    --border: #1e4029;
+    --border2: #265234;
+    --accent: #1db954;
+    --accent2: #0fa843;
+    --accent3: #13e860;
+    --teal: #00b4a0;
+    --teal2: #00d4be;
+    --text: #e8f5ec;
+    --text2: #9fc8ad;
+    --text3: #5a8a68;
+    --warn: #e6b800;
+    --danger: #e05252;
+    --glow: 0 0 40px rgba(29,185,84,0.15);
+    --glow2: 0 0 80px rgba(29,185,84,0.08);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Instrument Sans',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow-x:hidden;
+    cursor:default;
+  }
+
+  /* ─── NOISE TEXTURE OVERLAY ─── */
+  body::before{
+    content:'';
+    position:fixed;inset:0;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events:none;z-index:9999;opacity:0.4;
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+  /* ─── NAV ─── */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 3rem;height:64px;
+    background:rgba(5,15,9,0.85);
+    backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-logo{
+    font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;
+    color:var(--accent);letter-spacing:0.05em;
+    display:flex;align-items:center;gap:0.5rem;
+  }
+  .nav-logo span{color:var(--text2);font-weight:400}
+  .nav-links{display:flex;gap:2rem;list-style:none}
+  .nav-links a{
+    color:var(--text3);text-decoration:none;font-size:0.82rem;
+    letter-spacing:0.06em;text-transform:uppercase;font-weight:500;
+    transition:color .2s;
+  }
+  .nav-links a:hover{color:var(--accent)}
+  .nav-badge{
+    font-family:'JetBrains Mono',monospace;font-size:0.72rem;
+    color:var(--accent);border:1px solid var(--border2);
+    padding:0.25rem 0.75rem;border-radius:2px;letter-spacing:0.05em;
+  }
+
+  /* ─── HERO ─── */
+  #hero{
+    min-height:100vh;display:flex;flex-direction:column;
+    justify-content:center;align-items:flex-start;
+    padding:8rem 3rem 4rem;
+    position:relative;overflow:hidden;
+  }
+  .hero-grid{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(29,185,84,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(29,185,84,0.04) 1px, transparent 1px);
+    background-size:60px 60px;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 50%, black 20%, transparent 100%);
+  }
+  .hero-orb{
+    position:absolute;
+    border-radius:50%;filter:blur(80px);pointer-events:none;
+  }
+  .hero-orb1{width:600px;height:600px;background:rgba(29,185,84,0.06);top:-100px;right:-100px}
+  .hero-orb2{width:400px;height:400px;background:rgba(0,180,160,0.05);bottom:0;left:100px}
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:0.78rem;
+    color:var(--teal);letter-spacing:0.12em;text-transform:uppercase;
+    margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem;
+  }
+  .hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--teal)}
+  h1{
+    font-family:'Syne',sans-serif;font-weight:800;
+    font-size:clamp(3rem,7vw,6.5rem);line-height:0.95;
+    letter-spacing:-0.02em;margin-bottom:1.5rem;
+    max-width:14ch;
+  }
+  h1 em{
+    font-style:normal;
+    background:linear-gradient(135deg,var(--accent),var(--teal));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  }
+  .hero-sub{
+    max-width:52ch;color:var(--text2);line-height:1.7;
+    font-size:1.05rem;margin-bottom:2.5rem;
+  }
+  .hero-ctas{display:flex;gap:1rem;flex-wrap:wrap}
+  .btn-primary{
+    background:var(--accent);color:#000;font-weight:600;
+    padding:0.75rem 2rem;border:none;border-radius:3px;
+    text-decoration:none;font-size:0.9rem;letter-spacing:0.04em;
+    transition:background .2s,transform .15s;cursor:pointer;
+  }
+  .btn-primary:hover{background:var(--accent3);transform:translateY(-2px)}
+  .btn-outline{
+    border:1px solid var(--border2);color:var(--text2);
+    padding:0.75rem 2rem;border-radius:3px;
+    text-decoration:none;font-size:0.9rem;letter-spacing:0.04em;
+    transition:border-color .2s,color .2s,transform .15s;
+  }
+  .btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+  .hero-stats{
+    display:flex;gap:3rem;margin-top:4rem;flex-wrap:wrap;
+  }
+  .stat{border-left:2px solid var(--border2);padding-left:1.2rem}
+  .stat-num{
+    font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;
+    color:var(--accent);line-height:1;
+  }
+  .stat-label{color:var(--text3);font-size:0.8rem;letter-spacing:0.06em;text-transform:uppercase;margin-top:0.25rem}
+
+  /* ─── SECTIONS ─── */
+  section{padding:6rem 3rem;max-width:1200px;margin:0 auto}
+  .section-eyebrow{
+    font-family:'JetBrains Mono',monospace;font-size:0.75rem;
+    color:var(--teal);letter-spacing:0.12em;text-transform:uppercase;
+    margin-bottom:0.75rem;
+  }
+  h2{
+    font-family:'Syne',sans-serif;font-weight:700;
+    font-size:clamp(1.8rem,3.5vw,3rem);
+    line-height:1.1;margin-bottom:1rem;letter-spacing:-0.01em;
+  }
+  h2 span{color:var(--accent)}
+  .section-intro{color:var(--text2);max-width:56ch;line-height:1.7;margin-bottom:3rem}
+
+  /* ─── DIVIDER ─── */
+  .divider{
+    height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);
+    margin:0 3rem;
+  }
+
+  /* ─── PROBLEM ─── */
+  .problem-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:2px;
+    border:1px solid var(--border);border-radius:4px;overflow:hidden;
+  }
+  .problem-cell{
+    padding:2rem;background:var(--card);
+    transition:background .2s;
+  }
+  .problem-cell:hover{background:var(--card2)}
+  .problem-cell.full{grid-column:1/-1}
+  .problem-label{
+    font-family:'JetBrains Mono',monospace;font-size:0.7rem;
+    color:var(--accent);letter-spacing:0.1em;text-transform:uppercase;
+    margin-bottom:0.5rem;
+  }
+  .problem-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:0.5rem}
+  .problem-desc{color:var(--text2);font-size:0.9rem;line-height:1.65}
+
+  /* ─── FEATURES ─── */
+  .features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1px;background:var(--border)}
+  .feature-card{
+    background:var(--bg);padding:2rem;
+    transition:background .2s;
+  }
+  .feature-card:hover{background:var(--card)}
+  .feature-icon{
+    width:44px;height:44px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.3rem;margin-bottom:1rem;
+    background:var(--card2);border:1px solid var(--border);
+  }
+  .feature-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:0.4rem}
+  .feature-desc{color:var(--text2);font-size:0.88rem;line-height:1.6}
+
+  /* ─── DIAGRAM SECTION ─── */
+  .diagram-wrapper{
+    border:1px solid var(--border);border-radius:6px;overflow:hidden;
+    background:var(--card);position:relative;
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+  }
+  .diagram-header{
+    padding:1rem 1.5rem;border-bottom:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;gap:0.75rem;
+    background:var(--card2);
+  }
+  .diagram-dot{width:10px;height:10px;border-radius:50%}
+  .diagram-title{font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--text2);letter-spacing:0.05em}
+  .diagram-wrapper img{
+    width:100%;max-width:900px;height:auto;max-height:70vh;object-fit:contain;display:block;margin:0 auto;
+    padding:1.5rem;background:var(--card);border-radius:6px;
+    box-shadow:var(--glow2);
+  }
+
+  /* ─── TECH STACK ─── */
+  .tech-row{display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:2rem}
+  .tech-badge{
+    font-family:'JetBrains Mono',monospace;font-size:0.78rem;
+    border:1px solid var(--border2);color:var(--text2);
+    padding:0.35rem 0.9rem;border-radius:2px;
+    transition:border-color .2s,color .2s;letter-spacing:0.03em;
+  }
+  .tech-badge:hover{border-color:var(--accent);color:var(--accent)}
+  .tech-badge.hw{border-color:rgba(0,180,160,0.4);color:var(--teal2)}
+  .tech-badge.be{border-color:rgba(29,185,84,0.4);color:var(--accent)}
+  .tech-badge.fe{border-color:rgba(230,184,0,0.4);color:var(--warn)}
+
+  /* ─── SENSORS TABLE ─── */
+  .sensor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+  .sensor-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:4px;padding:1.5rem;
+    transition:border-color .2s,transform .2s;
+  }
+  .sensor-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+  .sensor-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.25rem}
+  .sensor-model{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--teal);margin-bottom:0.6rem}
+  .sensor-desc{color:var(--text2);font-size:0.85rem;line-height:1.55}
+
+  /* ─── FLOW STEPS ─── */
+  .flow-steps{display:flex;flex-direction:column;gap:0}
+  .flow-step{
+    display:grid;grid-template-columns:60px 1fr;gap:1.5rem;
+    align-items:start;padding:1.5rem 0;
+    border-bottom:1px solid var(--border);
+    transition:background .2s;
+  }
+  .flow-step:last-child{border-bottom:none}
+  .step-num{
+    font-family:'Syne',sans-serif;font-weight:800;font-size:2rem;
+    color:var(--border2);line-height:1;
+    transition:color .2s;
+  }
+  .flow-step:hover .step-num{color:var(--accent)}
+  .step-title{font-family:'Syne',sans-serif;font-weight:700;margin-bottom:0.25rem}
+  .step-desc{color:var(--text2);font-size:0.88rem;line-height:1.6}
+  .step-tag{
+    display:inline-block;font-family:'JetBrains Mono',monospace;font-size:0.65rem;
+    color:var(--teal);border:1px solid rgba(0,180,160,0.3);
+    padding:0.15rem 0.5rem;border-radius:2px;margin-left:0.5rem;
+    vertical-align:middle;
+  }
+
+  /* ─── TEAM ─── */
+  .team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+  .team-card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:4px;padding:1.5rem;text-align:center;
+    transition:border-color .2s;
+  }
+  .team-card:hover{border-color:var(--accent)}
+  .team-avatar{
+    width:64px;height:64px;border-radius:50%;
+    background:linear-gradient(135deg,var(--card2),var(--border2));
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 1rem;font-size:1.5rem;font-family:'Syne',sans-serif;font-weight:800;
+    color:var(--accent);border:2px solid var(--border2);
+  }
+  .team-name{font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;margin-bottom:0.15rem}
+  .E-number{color:var(--text3);font-size:0.8rem;font-family:'JetBrains Mono',monospace;letter-spacing:0.04em}
+
+  /* ─── PROGRESS ─── */
+  .progress-list{display:flex;flex-direction:column;gap:1rem}
+  .progress-item{}
+  .progress-meta{display:flex;justify-content:space-between;margin-bottom:0.4rem}
+  .progress-label{font-family:'Syne',sans-serif;font-weight:600;font-size:0.9rem}
+  .progress-pct{font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--accent)}
+  .progress-bar-bg{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+  .progress-bar{
+    height:100%;border-radius:3px;
+    background:linear-gradient(90deg,var(--accent),var(--teal));
+    transition:width 1s ease;
+  }
+
+  /* ─── FOOTER ─── */
+  footer{
+    border-top:1px solid var(--border);padding:2.5rem 3rem;
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+  }
+  .footer-brand{font-family:'Syne',sans-serif;font-weight:800;color:var(--accent);font-size:0.9rem}
+  .footer-text{color:var(--text3);font-size:0.8rem;font-family:'JetBrains Mono',monospace}
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  .animate-fadeup{animation:fadeUp 0.7s ease both}
+  .d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.3s}.d4{animation-delay:.4s}
+
+  .live-dot{
+    width:7px;height:7px;border-radius:50%;background:var(--accent);
+    display:inline-block;margin-right:6px;
+    animation:pulse 2s ease infinite;
+  }
+
+  /* Responsive */
+  @media(max-width:768px){
+    nav{padding:0 1.5rem}
+    .nav-links{display:none}
+    section{padding:4rem 1.5rem}
+    #hero{padding:7rem 1.5rem 3rem}
+    .problem-grid{grid-template-columns:1fr}
+    .problem-cell.full{grid-column:1}
+    footer{flex-direction:column;text-align:center;padding:2rem 1.5rem}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">⬡ Smart-Metrolac <span>/ Group 16</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#flow">Flow</a></li>
+    <li><a href="#sensors">Hardware</a></li>
+    <li><a href="#tech">Tech Stack</a></li>
+    <li><a href="#team">Team</a></li>
+  </ul>
+  <div class="nav-badge"><span class="live-dot"></span>Milestone 2</div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="max-width:100%;padding-left:3rem;padding-right:3rem">
+  <div class="hero-grid"></div>
+  <div class="hero-orb hero-orb1"></div>
+  <div class="hero-orb hero-orb2"></div>
+
+  <div class="hero-eyebrow animate-fadeup">3rd-Year Engineering Project · 2025 / 2026</div>
+  <h1 class="animate-fadeup d1">Smart-<em>Metrolac</em></h1>
+  <p class="hero-sub animate-fadeup d2">IoT-based rubber latex quality measurement system — automating DRC calculation, fraud detection, and transparent payments for Sri Lanka's natural rubber industry.</p>
+  <div class="hero-ctas animate-fadeup d3">
+    <a href="#features" class="btn-primary">Explore Features</a>
+    <a href="#architecture" class="btn-outline">View Architecture</a>
+  </div>
+  <div class="hero-stats animate-fadeup d4">
+    <div class="stat">
+      <div class="stat-num">4</div>
+      <div class="stat-label">Sensors</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3</div>
+      <div class="stat-label">System Tiers</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">9</div>
+      <div class="stat-label">DB Tables</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0%</div>
+      <div class="stat-label">Data Loss</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ABOUT / PROBLEM -->
+<section id="about">
+  <div class="section-eyebrow">Problem Statement</div>
+  <h2>Why <span>Smart-Metrolac</span> exists</h2>
+  <p class="section-intro">Sri Lanka's natural rubber industry has relied on a decades-old, manual measurement process — open to error, fraud, and opacity. We built the solution.</p>
+
+  <div class="problem-grid">
+    <div class="problem-cell">
+      <div class="problem-label">01 — Status Quo</div>
+      <div class="problem-title">Manual & Error-Prone</div>
+      <div class="problem-desc">Farmers bring latex to collection centers where measurements are taken manually with pen and paper. No digital records. No transparency into payment calculation.</div>
+    </div>
+    <div class="problem-cell">
+      <div class="problem-label">02 — Risk</div>
+      <div class="problem-title">Fraud & Adulteration</div>
+      <div class="problem-desc">Salt adulteration and ammonia addition are common fraud vectors. Current manual checks cannot reliably detect adulterated latex before payment is issued.</div>
+    </div>
+    <div class="problem-cell">
+      <div class="problem-label">03 — Our Approach</div>
+      <div class="problem-title">ESP32-Based IoT Device</div>
+      <div class="problem-desc">Replace the manual process with a fully automated sensor suite. Measure DRC, temperature, pH, and TDS. Generate digital invoices and sync wirelessly to a cloud backend.</div>
+    </div>
+    <div class="problem-cell">
+      <div class="problem-label">04 — Impact</div>
+      <div class="problem-title">Transparent Payments</div>
+      <div class="problem-desc">Every farmer gets a digital invoice. Weekly payments are auto-calculated. Role-based dashboards give full visibility to farmers, collection centers, and company admins.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="section-eyebrow">Capabilities</div>
+  <h2>Key <span>Features</span></h2>
+  <p class="section-intro">Every function of the Smart-Metrolac system — from edge sensing to cloud dashboards.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚖️</div>
+      <div class="feature-title">DRC Measurement</div>
+      <div class="feature-desc">Automatic Dry Rubber Content calculation using differential weight (plummet in air vs. latex) and a 5.5 cm³ known volume. EMA filtering for accuracy.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔬</div>
+      <div class="feature-title">Quality Control</div>
+      <div class="feature-desc">pH sensor detects spoilage (pH &lt; 6.0) or ammonia addition (pH &gt; 8.0). TDS sensor flags salt adulteration above 500 ppm with relay isolation for accuracy.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📄</div>
+      <div class="feature-title">Digital Invoicing</div>
+      <div class="feature-desc">Each measurement auto-generates a digital invoice: Litres × DRC% × daily price. Displayed on LCD, stored in PostgreSQL, viewable on the web dashboard.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📡</div>
+      <div class="feature-title">Store-and-Forward</div>
+      <div class="feature-desc">Wi-Fi lost? No data lost. Invoices are appended to /backlog.txt in LittleFS. A background task checks connection every 10s and streams the backlog on reconnect.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔐</div>
+      <div class="feature-title">JWT Security</div>
+      <div class="feature-desc">BCrypt password hashing, JWT stateless authentication, and @PreAuthorize role-based access on every API endpoint. Forced password change on first login.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <div class="feature-title">Role-Based Dashboards</div>
+      <div class="feature-desc">Three tailored React.js dashboards: Company Admin (KPIs, price management), Collection Center Admin (farmer management, alerts), Farmer (payment history).</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💰</div>
+      <div class="feature-title">Auto Payments</div>
+      <div class="feature-desc">Weekly payments auto-calculated from invoice totals. Company admin sets the daily rubber price per kg. All math is server-side, auditable, and tamper-proof.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🕐</div>
+      <div class="feature-title">NTP Time Stamping</div>
+      <div class="feature-desc">Exact timestamps via NTP (GMT+5:30) ensure even offline invoices sitting in the LittleFS backlog are recorded with the correct generation time in the database.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏭</div>
+      <div class="feature-title">Multi-Tenant Architecture</div>
+      <div class="feature-desc">Backend designed for multiple companies, multiple collection centers, multiple devices. PostgreSQL with proper indexing supports large data volumes at scale.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ARCHITECTURE DIAGRAM -->
+<section id="architecture">
+  <div class="section-eyebrow">System Design</div>
+  <h2>Three-Tier <span>Architecture</span></h2>
+  <p class="section-intro">Hardware layer (ESP32) communicates via HTTP and MQTT to a Spring Boot backend, which feeds a React.js frontend through REST APIs.</p>
+
+  <div class="diagram-wrapper" style="margin-bottom:3rem">
+    <div class="diagram-header">
+      <div class="diagram-dot" style="background:#e05252"></div>
+      <div class="diagram-dot" style="background:#e6b800"></div>
+      <div class="diagram-dot" style="background:#1db954"></div>
+      <div class="diagram-title">system-architecture.png — Three-Tier Overview</div>
+    </div>
+    <img src="images/system-architecture.png" alt="Three-Tier System Architecture Diagram"/>
+  </div>
+
+  <div class="diagram-wrapper">
+    <div class="diagram-header">
+      <div class="diagram-dot" style="background:#e05252"></div>
+      <div class="diagram-dot" style="background:#e6b800"></div>
+      <div class="diagram-dot" style="background:#1db954"></div>
+      <div class="diagram-title">data-flow.png — Measurement & Offline Flow</div>
+    </div>
+    <img src="images/data-flow.png" alt="Measurement Flow and Store-and-Forward Diagram"/>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FLOW -->
+<section id="flow">
+  <div class="section-eyebrow">Data & Control Flow</div>
+  <h2>Measurement <span>Flow</span></h2>
+  <p class="section-intro">A state-machine-driven firmware cycle ensures every reading is consistent, accurate, and non-blocking.</p>
+
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="step-num">01</div>
+      <div>
+        <div class="step-title">Farmer ID Input <span class="step-tag">keypad</span></div>
+        <div class="step-desc">Farmer types their 4-digit ID on the 4×4 membrane keypad. Device validates the ID and prompts for latex volume in litres.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">02</div>
+      <div>
+        <div class="step-title">Air Baseline Weight <span class="step-tag">HX711</span></div>
+        <div class="step-desc">The plummet is weighed in open air to establish a differential baseline for density calculation.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">03</div>
+      <div>
+        <div class="step-title">30-Second Stabilization <span class="step-tag">EMA</span></div>
+        <div class="step-desc">Plummet is submerged in latex. Weight, temperature (DS18B20), and pH readings are sampled continuously and smoothed via Exponential Moving Average over 30 seconds.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">04</div>
+      <div>
+        <div class="step-title">TDS Relay Read <span class="step-tag">relay isolation</span></div>
+        <div class="step-desc">A 1-channel relay briefly powers the TDS sensor. This prevents galvanic ground-loop interference with the pH sensor in the same liquid.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">05</div>
+      <div>
+        <div class="step-title">Density → DRC% Calculation</div>
+        <div class="step-desc">Displaced Mass ÷ 5.5 cm³ plummet volume = density. Temperature-compensated DRC% derived from standard rubber industry formula.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">06</div>
+      <div>
+        <div class="step-title">Price Fetch <span class="step-tag">HTTP GET</span></div>
+        <div class="step-desc">Device performs HTTP GET to Spring Boot backend for today's rubber price. Falls back to offline Preferences cache if Wi-Fi is unavailable.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">07</div>
+      <div>
+        <div class="step-title">Invoice & QC Alert</div>
+        <div class="step-desc">Total = Litres × DRC% × Price. pH and TDS are checked against thresholds. Adulteration alerts are shown on LCD and logged to backend.</div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="step-num">08</div>
+      <div>
+        <div class="step-title">MQTT Publish or LittleFS Save <span class="step-tag">offline-safe</span></div>
+        <div class="step-desc">If online: JSON payload published via MQTT to Spring Boot subscriber. If offline: appended to /backlog.txt and streamed on next reconnection.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- HARDWARE -->
+<section id="sensors">
+  <div class="section-eyebrow">Hardware Layer</div>
+  <h2>Sensors & <span>Actuators</span></h2>
+  <p class="section-intro">ESP32 dual-core 240MHz — simultaneously handling sensor reads, JSON serialization, and MQTT. Every component chosen for reliability in a harsh latex environment.</p>
+
+  <div class="sensor-grid">
+    <div class="sensor-card">
+      <div class="sensor-name">Load Cell Amplifier</div>
+      <div class="sensor-model">HX711 — GPIO 18/19</div>
+      <div class="sensor-desc">Measures differential weight (air vs. latex) to calculate displaced mass and compute latex density. EMA filter applied to eliminate vibration noise.</div>
+    </div>
+    <div class="sensor-card">
+      <div class="sensor-name">Temperature Sensor</div>
+      <div class="sensor-model">DS18B20 — 1-Wire GPIO 4</div>
+      <div class="sensor-desc">±0.5°C accuracy. Used for DRC temperature compensation and TDS reading compensation. 1-Wire protocol ensures clean signal isolation.</div>
+    </div>
+    <div class="sensor-card">
+      <div class="sensor-name">pH Sensor</div>
+      <div class="sensor-model">Analog — ADC GPIO 34</div>
+      <div class="sensor-desc">Detects latex spoilage (pH &lt; 6.0) or ammonia addition (pH &gt; 8.0). Reading stabilized over the full 30-second immersion window.</div>
+    </div>
+    <div class="sensor-card">
+      <div class="sensor-name">TDS Sensor</div>
+      <div class="sensor-model">Analog — ADC GPIO 35</div>
+      <div class="sensor-desc">Detects salt adulteration above 500 ppm. Placed behind a relay to eliminate ground-loop interference with the co-submerged pH sensor.</div>
+    </div>
+    <div class="sensor-card">
+      <div class="sensor-name">Relay Module</div>
+      <div class="sensor-model">1-Channel — GPIO 5</div>
+      <div class="sensor-desc">Acts as a "drawbridge" isolating the TDS sensor until the exact moment it is read. Solves galvanic interference — a key hardware insight of this project.</div>
+    </div>
+    <div class="sensor-card">
+      <div class="sensor-name">LCD Display</div>
+      <div class="sensor-model">I2C 20×4 — 0x27</div>
+      <div class="sensor-desc">4-line comprehensive UI. Shows measurement progress bars, sensor readings, invoices, and fraud alerts with audible buzzer feedback.</div>
+    </div>
+    <div class="sensor-card">
+      <div class="sensor-name">4×4 Keypad</div>
+      <div class="sensor-model">8 GPIO pins</div>
+      <div class="sensor-desc">Farmer ID and volume input. [A] = Confirm, [B] = Delete, [*] = Reset. Designed for simple one-handed operation in field conditions.</div>
+    </div>
+    <div class="sensor-card">
+      <div class="sensor-name">Flash Storage</div>
+      <div class="sensor-model">LittleFS + Preferences</div>
+      <div class="sensor-desc">LittleFS stores offline invoice backlog (/backlog.txt). Preferences caches the latest rubber price across reboots for fully offline operation.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TECH STACK -->
+<section id="tech">
+  <div class="section-eyebrow">Technologies</div>
+  <h2>Full <span>Tech Stack</span></h2>
+  <p class="section-intro">Every tool, protocol, and library powering Smart-Metrolac end-to-end.</p>
+
+  <div style="margin-bottom:2.5rem">
+    <div class="problem-label" style="margin-bottom:0.75rem">🔧 Hardware / Firmware</div>
+    <div class="tech-row">
+      <span class="tech-badge hw">ESP32</span>
+      <span class="tech-badge hw">Arduino C++</span>
+      <span class="tech-badge hw">LittleFS</span>
+      <span class="tech-badge hw">ArduinoJson</span>
+      <span class="tech-badge hw">PubSubClient</span>
+      <span class="tech-badge hw">HTTPClient</span>
+      <span class="tech-badge hw">HX711</span>
+      <span class="tech-badge hw">DS18B20</span>
+      <span class="tech-badge hw">NTP</span>
+    </div>
+  </div>
+  <div style="margin-bottom:2.5rem">
+    <div class="problem-label" style="margin-bottom:0.75rem">⚙️ Backend</div>
+    <div class="tech-row">
+      <span class="tech-badge be">Spring Boot</span>
+      <span class="tech-badge be">Java 21</span>
+      <span class="tech-badge be">PostgreSQL</span>
+      <span class="tech-badge be">Spring Security + JWT</span>
+      <span class="tech-badge be">Spring Data JPA</span>
+      <span class="tech-badge be">Spring Integration MQTT</span>
+      <span class="tech-badge be">BCrypt</span>
+      <span class="tech-badge be">Hibernate</span>
+      <span class="tech-badge be">Mosquitto MQTT</span>
+    </div>
+  </div>
+  <div>
+    <div class="problem-label" style="margin-bottom:0.75rem">🌐 Frontend</div>
+    <div class="tech-row">
+      <span class="tech-badge fe">React.js</span>
+      <span class="tech-badge fe">Redux Toolkit</span>
+      <span class="tech-badge fe">Axios</span>
+      <span class="tech-badge fe">Tailwind CSS</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PROGRESS -->
+<section id="progress">
+  <div class="section-eyebrow">Current Status</div>
+  <h2>Milestone <span>Progress</span></h2>
+  <p class="section-intro">Where we stand as of Milestone 2.</p>
+
+  <div style="max-width:600px">
+    <div class="progress-list">
+      <div class="progress-item">
+        <div class="progress-meta">
+          <span class="progress-label">Backend — 9-table DB, JWT, MQTT pipeline</span>
+          <span class="progress-pct">100%</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar" style="width:100%"></div></div>
+      </div>
+      <div class="progress-item" style="margin-top:1rem">
+        <div class="progress-meta">
+          <span class="progress-label">Hardware / Firmware — Sensors, Store-and-Forward</span>
+          <span class="progress-pct">90%</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar" style="width:90%"></div></div>
+      </div>
+      <div class="progress-item" style="margin-top:1rem">
+        <div class="progress-meta">
+          <span class="progress-label">Frontend — React dashboards</span>
+          <span class="progress-pct">80%</span>
+        </div>
+        <div class="progress-bar-bg"><div class="progress-bar" style="width:80%;background:linear-gradient(90deg,var(--warn),#c49a00)"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+<!-- BUDGET -->
+<section id="budget">
+  <div class="section-eyebrow">Project Budget</div>
+  <h2>Estimated <span>Budget</span></h2>
+  <p class="section-intro">Summary of project expenditure and planned allocation.</p>
+
+  <div class="diagram-wrapper" style="max-width:920px;margin:0 auto 2rem">
+    <div class="diagram-header">
+      <div class="diagram-dot" style="background:#1db954"></div>
+      <div class="diagram-title">budget.png — Project Budget</div>
+    </div>
+    <img src="images/budget.png" alt="Project Budget"/>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="section-eyebrow">The Team</div>
+  <h2>Group <span>16</span></h2>
+  <p class="section-intro">Department of Computer Engineering · University of Peradeniya</p>
+
+  <div class="team-grid">
+    <div class="team-card">
+      <div class="team-avatar">M1</div>
+      <div class="team-name">Manilgama N.C.</div>
+      <div class="E-number">E/21/254</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">M2</div>
+      <div class="team-name">K.A.P.M.Perera</div>
+      <div class="E-number">E/21/292</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">M3</div>
+      <div class="team-name">Rukshan A.D.</div>
+      <div class="E-number">E/21/339</div>
+    </div>
+    <div class="team-card">
+      <div class="team-avatar">M4</div>
+      <div class="team-name">Suriyapperuma H.D.</div>
+      <div class="E-number">E/21/453</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">⬡ Smart-Metrolac</div>
+  <div class="footer-text">Group 16 · 3rd Year Project · University of Peradeniya · 2025/2026</div>
+  <div class="footer-text" style="color:var(--text3)">E/21 Batch · Department of Computer Engineering</div>
+</footer>
+
+<script>
+// Intersection observer for subtle entrance animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, {threshold: 0.08});
+
+document.querySelectorAll('.feature-card, .problem-cell, .sensor-card, .flow-step, .team-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
