@@ -6,7 +6,7 @@ const STORAGE_KEY = 'smartmetrolac_token'
 // Using an instance (instead of axios directly) lets us set defaults and
 // attach interceptors in one place rather than repeating them per request.
 const axiosClient = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 10000,  // Abort requests that take longer than 10 seconds.
 })
