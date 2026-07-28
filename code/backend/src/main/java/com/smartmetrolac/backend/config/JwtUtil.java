@@ -24,17 +24,25 @@ public class JwtUtil {
         this.expirationMilliseconds = expirationMilliseconds;
     }
 
-    public String generateToken(String username, String role) {
+    // Full token generation — includes role, mustChangePassword, and userId claims.
+    public String generateToken(String username, String role, boolean mustChangePassword, Long userId) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + expirationMilliseconds);
 
         return Jwts.builder()
                 .subject(username)
                 .claim("role", role)
+                .claim("must_change_password", mustChangePassword)
+                .claim("userId", userId)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(secretKey)
                 .compact();
+    }
+
+    // Backwards-compatible overload — delegates with mustChangePassword = false, userId = null.
+    public String generateToken(String username, String role) {
+        return generateToken(username, role, false, null);
     }
 
     public boolean validateToken(String token) {
