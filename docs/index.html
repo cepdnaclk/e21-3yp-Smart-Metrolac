@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Smart-Metrolac | IoT-Powered Dry Rubber Content Testing</title>
+<meta name="description" content="Smart-Metrolac replaces manual field DRC testing with a real-time, IoT-connected floating sensor based on Archimedes' buoyancy principle."/>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script id="tailwind-config" src="assets/js/tailwind-config.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..900&display=swap" rel="stylesheet"/>
+<link rel="icon" type="image/png" href="images/logo.png"/>
+
+<!-- Vendor: AOS (scroll animations) -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+
+<link rel="stylesheet" href="assets/css/main.css"/>
+</head>
+<body class="bg-background font-body-md text-on-background">
+
+<!-- ══════════════ HEADER ══════════════ -->
+<header class="fixed top-0 w-full z-50 bg-primary/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.1)]">
+  <div class="h-20 w-full px-margin-mobile lg:px-margin-desktop flex items-center justify-between">
+    <div class="flex items-center gap-base">
+      <img src="images/logo.png" alt="Smart-Metrolac logo" class="h-9 w-9 object-contain"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex'">
+      <span class="material-symbols-outlined text-on-primary" style="display:none">precision_manufacturing</span>
+      <span class="font-headline-md text-headline-md text-on-primary tracking-tight">Smart-Metrolac</span>
+    </div>
+    <nav class="hidden lg:flex items-center gap-md">
+      <a class="nav-link-underline font-label-caps text-label-caps text-on-primary font-bold uppercase pb-1" href="#home">Home</a>
+      <a class="nav-link-underline font-label-caps text-label-caps text-on-primary/70 hover:text-on-primary transition-all duration-200 uppercase pb-1" href="#introduction">Introduction</a>
+      <a class="nav-link-underline font-label-caps text-label-caps text-on-primary/70 hover:text-on-primary transition-all duration-200 uppercase pb-1" href="#solution-architecture">Solution Architecture</a>
+      <a class="nav-link-underline font-label-caps text-label-caps text-on-primary/70 hover:text-on-primary transition-all duration-200 uppercase pb-1" href="#hardware-design">Hardware Design</a>
+      <a class="nav-link-underline font-label-caps text-label-caps text-on-primary/70 hover:text-on-primary transition-all duration-200 uppercase pb-1" href="#software-design">Software Design</a>
+      <a class="nav-link-underline font-label-caps text-label-caps text-on-primary/70 hover:text-on-primary transition-all duration-200 uppercase pb-1" href="#demonstration">Demonstration</a>
+      <a class="nav-link-underline font-label-caps text-label-caps text-on-primary/70 hover:text-on-primary transition-all duration-200 uppercase pb-1" href="#testing">Testing</a>
+    </nav>
+    <button id="menu-toggle" class="lg:hidden text-on-primary">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+  </div>
+  <div id="mobile-menu" class="hidden lg:hidden flex-col bg-primary px-margin-mobile pb-md gap-sm">
+    <a class="font-label-caps text-label-caps text-on-primary/80 uppercase py-2" href="#home">Home</a>
+    <a class="font-label-caps text-label-caps text-on-primary/80 uppercase py-2" href="#introduction">Introduction</a>
+    <a class="font-label-caps text-label-caps text-on-primary/80 uppercase py-2" href="#solution-architecture">Solution Architecture</a>
+    <a class="font-label-caps text-label-caps text-on-primary/80 uppercase py-2" href="#hardware-design">Hardware Design</a>
+    <a class="font-label-caps text-label-caps text-on-primary/80 uppercase py-2" href="#software-design">Software Design</a>
+    <a class="font-label-caps text-label-caps text-on-primary/80 uppercase py-2" href="#demonstration">Demonstration</a>
+    <a class="font-label-caps text-label-caps text-on-primary/80 uppercase py-2" href="#testing">Testing</a>
+  </div>
+</header>
+
+<main class="w-full pt-20">
+<div class="flex flex-col w-full">
+
+<!-- ══════════════ HERO ══════════════ -->
+<section id="home" class="relative w-full h-screen -mt-20 overflow-hidden flex items-center">
+  <div class="hero-media">
+    <!-- TODO: add a rubber-plantation clip at assets/img/rubber-farm-hero.mp4 (see notes) -->
+    <video class="hero-bg" autoplay muted loop playsinline poster="images/product-final.jpg">
+      <source src="assets/img/rubber-farm-hero.mp4" type="video/mp4">
+    </video>
+    <img class="hero-fallback" alt="Misty rubber tree plantation at dawn"
+         src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0Vc6-blu4WoTfgD-QJB-LpUXaQ3wk33qCwq0Y3QYD1BTD_42_Zlt7rRdk6rYFB36n-e-bMfPkVlR6XiIgbbCZE57Vi0txVV44H2gNEuFpCQzlC0jkxzazQMC1u4SebF927ct8ZKcW7CVVprJ1ldBlYo_2AtO5R0cbqqtY7U6VY6X1uaHPndqUPU1cfUp4z0dBfzEuhVvukYhOkxwjT8jIuHPSWwIWymaBtw0w70tjGgL93PxC8w"/>
+    <div class="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/40 to-transparent z-[2]"></div>
+  </div>
+  <div class="relative z-10 px-margin-mobile lg:px-margin-desktop w-full max-w-7xl">
+    <div class="flex flex-col gap-lg max-w-2xl">
+      <div class="flex items-center gap-sm" data-aos="fade-right" data-aos-delay="100">
+        <span class="w-8 h-[1px] bg-tertiary-fixed"></span>
+        <span class="font-label-caps text-label-caps text-tertiary-fixed tracking-widest uppercase">Precision Agritech</span>
+      </div>
+      <div class="flex flex-col gap-base" data-aos="fade-up" data-aos-delay="200">
+        <h1 class="font-headline-xl text-headline-xl text-on-primary leading-none tracking-tighter">Smart-Metrolac</h1>
+        <h2 class="font-headline-lg text-headline-lg text-surface-variant max-w-lg leading-tight">IoT-Powered Dry Rubber Content Testing</h2>
+      </div>
+      <p class="font-body-lg text-body-lg text-on-primary/80 max-w-md leading-relaxed" data-aos="fade-up" data-aos-delay="300">
+        Replacing manual field testing with real-time, high-precision measurement using Archimedes' buoyancy principle.
+        Field-validated against the ISO 126 oven-drying standard at Lalan Rubber.
+      </p>
+      <div class="flex flex-wrap gap-md mt-base" data-aos="fade-up" data-aos-delay="400">
+        <a href="#solution-architecture" class="group relative px-xl py-md bg-tertiary-container hover:bg-on-tertiary-container transition-all duration-300 rounded-full flex items-center gap-sm overflow-hidden shadow-xl">
+          <span class="relative z-10 font-label-caps text-label-caps text-on-tertiary uppercase font-bold tracking-wider">See How It Works</span>
+          <span class="material-symbols-outlined relative z-10 text-on-tertiary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </a>
+        <a href="https://github.com/cepdnaclk/e21-3yp-Smart-Metrolac" target="_blank" class="px-xl py-md border-[1.5px] border-on-primary/30 hover:border-on-primary hover:bg-on-primary/5 transition-all duration-300 rounded-full flex items-center gap-sm">
+          <span class="material-symbols-outlined text-on-primary text-[20px]">terminal</span>
+          <span class="font-label-caps text-label-caps text-on-primary uppercase font-medium tracking-wider">View on GitHub</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="absolute right-margin-desktop bottom-xl hidden lg:block z-10">
+    <div class="[writing-mode:vertical-rl] flex items-center gap-md">
+      <span class="font-label-caps text-label-caps text-on-primary/40 uppercase tracking-[0.3em]">Industrial Precision • Field Validated</span>
+      <div class="w-[1px] h-32 bg-on-primary/20"></div>
+    </div>
+  </div>
+  <div class="absolute bottom-12 left-margin-mobile lg:left-margin-desktop z-10 flex items-center gap-md bg-primary/20 backdrop-blur-md px-md py-sm rounded-xl border border-on-primary/10" data-aos="fade-up" data-aos-delay="500">
+    <div class="relative flex h-3 w-3">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed opacity-75"></span>
+      <span class="relative inline-flex rounded-full h-3 w-3 bg-tertiary-fixed"></span>
+    </div>
+    <div class="flex flex-col">
+      <span class="font-label-caps text-[10px] text-tertiary-fixed-dim uppercase leading-none mb-1">System Status</span>
+      <span class="font-data-display text-[14px] text-on-primary leading-none">ACTIVE_STREAM_LN_402</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ STATS STRIP ══════════════ -->
+<section class="bg-surface py-xl">
+  <div class="px-margin-mobile lg:px-margin-desktop grid grid-cols-1 md:grid-cols-3 gap-xl max-w-7xl mx-auto">
+    <div class="flex flex-col gap-sm" data-aos="fade-up" data-aos-delay="0">
+      <span class="font-data-display text-headline-md text-primary"><span class="counter" data-target="0.74" data-decimals="2" data-prefix="±" data-suffix="%">±0.00%</span></span>
+      <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">MAE vs ISO 126</p>
+      <div class="w-full h-1 bg-surface-container-highest mt-xs"><div class="w-[92%] h-full bg-primary-container"></div></div>
+    </div>
+    <div class="flex flex-col gap-sm" data-aos="fade-up" data-aos-delay="100">
+      <span class="font-data-display text-headline-md text-primary"><span class="counter" data-target="8" data-decimals="0">0</span>/8</span>
+      <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Lalan Rubber Field Samples</p>
+      <div class="w-full h-1 bg-surface-container-highest mt-xs"><div class="w-full h-full bg-primary-container"></div></div>
+    </div>
+    <div class="flex flex-col gap-sm" data-aos="fade-up" data-aos-delay="200">
+      <span class="font-data-display text-headline-md text-primary"><span class="counter" data-target="3" data-decimals="0">0</span></span>
+      <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Role-Based Dashboards</p>
+      <div class="w-full h-1 bg-surface-container-highest mt-xs"><div class="w-[75%] h-full bg-primary-container"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ INTRODUCTION ══════════════ -->
+<section id="introduction" class="bg-surface-container-low py-xl">
+  <div class="px-margin-mobile lg:px-margin-desktop max-w-7xl mx-auto flex flex-col gap-lg">
+    <div class="flex flex-col gap-sm max-w-3xl" data-aos="fade-up">
+      <span class="font-label-caps text-label-caps text-on-tertiary-container uppercase tracking-widest">01 — The Problem</span>
+      <h2 class="font-headline-lg text-headline-lg text-primary">Why Smart-Metrolac Exists</h2>
+      <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+        Dry Rubber Content (DRC) determines what a farmer gets paid for their latex. Today, that reading is taken with a
+        traditional Metrolac hydrometer — a manual process that depends on the operator's eye, is slow at the collection
+        point, and frequently produces figures farmers and factories dispute. There is no real-time record, no traceability,
+        and no way to catch errors before payment is settled.
+      </p>
+      <p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed">
+        Smart-Metrolac replaces this with a floating IoT sensor that applies Archimedes' buoyancy principle and a
+        custom two-component mixture model to compute DRC automatically, transmit it live, and make every reading
+        auditable — validated in the field against the ISO 126 oven-drying standard.
+      </p>
+    </div>
+
+    <!-- Problem explanation video -->
+    <div class="w-full max-w-4xl" data-aos="zoom-in" data-aos-delay="100">
+      <div class="relative w-full pt-[56.25%] rounded-xl overflow-hidden border border-outline-variant shadow-lg bg-surface-container-highest">
+        <!-- TODO: replace VIDEO_ID_HERE with the problem-explanation YouTube video ID -->
+        <iframe class="absolute inset-0 w-full h-full"
+                src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+                title="Smart-Metrolac — The Problem with Manual DRC Testing"
+                frameborder="0" allowfullscreen></iframe>
+      </div>
+      <p class="font-label-caps text-label-caps text-on-surface-variant mt-sm uppercase tracking-wide">▸ Swap the embed src above with your problem-explanation video link</p>
+    </div>
+
+    <!-- Traditional vs Smart-Metrolac comparison -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-md mt-md">
+      <div class="lift-card bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col gap-sm" data-aos="fade-right">
+        <span class="font-label-caps text-label-caps text-error uppercase tracking-widest">Traditional Metrolac</span>
+        <ul class="font-body-md text-body-md text-on-surface-variant flex flex-col gap-2 mt-1">
+          <li class="flex gap-2"><span class="material-symbols-outlined text-error text-[18px]">close</span>Manual, operator-dependent reading</li>
+          <li class="flex gap-2"><span class="material-symbols-outlined text-error text-[18px]">close</span>No digital record or traceability</li>
+          <li class="flex gap-2"><span class="material-symbols-outlined text-error text-[18px]">close</span>Frequent farmer–factory disputes</li>
+        </ul>
+      </div>
+      <div class="lift-card bg-primary-container border border-primary rounded-lg p-md flex flex-col gap-sm" data-aos="fade-left">
+        <span class="font-label-caps text-label-caps text-tertiary-fixed uppercase tracking-widest">Smart-Metrolac</span>
+        <ul class="font-body-md text-body-md text-on-primary-container flex flex-col gap-2 mt-1">
+          <li class="flex gap-2"><span class="material-symbols-outlined text-tertiary-fixed text-[18px]">check</span>Automated buoyancy-based reading</li>
+          <li class="flex gap-2"><span class="material-symbols-outlined text-tertiary-fixed text-[18px]">check</span>Live cloud record, fully auditable</li>
+          <li class="flex gap-2"><span class="material-symbols-outlined text-tertiary-fixed text-[18px]">check</span>±0.74% MAE vs ISO 126 lab standard</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ SOLUTION ARCHITECTURE ══════════════ -->
+<section id="solution-architecture" class="bg-surface py-xl">
+  <div class="px-margin-mobile lg:px-margin-desktop max-w-7xl mx-auto flex flex-col gap-lg">
+    <div class="flex flex-col gap-sm max-w-3xl" data-aos="fade-up">
+      <span class="font-label-caps text-label-caps text-on-tertiary-container uppercase tracking-widest">02 — System Design</span>
+      <h2 class="font-headline-lg text-headline-lg text-primary">Three-Tier Architecture</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Device, cloud, and interface layers work together to turn a physical buoyancy reading into a live, role-based dashboard update.
+      </p>
+    </div>
+
+    <!-- Native Three-Tier Architecture Diagram -->
+    <div class="flex flex-col items-center" data-aos="zoom-in">
+
+      <!-- HARDWARE LAYER -->
+      <div class="tier-panel w-full max-w-4xl">
+        <div class="tier-header hw"><span class="material-symbols-outlined text-[18px]">developer_board</span>Hardware Layer</div>
+        <div class="tier-body flex flex-col gap-md items-center">
+          <div class="hub-box bg-primary"><span class="material-symbols-outlined">memory</span>ESP32 Device</div>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-sm w-full">
+            <div class="border border-outline-variant rounded-lg p-sm flex flex-col gap-1">
+              <span class="material-symbols-outlined text-primary text-[20px]">science</span>
+              <span class="font-label-caps text-label-caps text-primary">Sensors</span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant">HX711, DS18B20, pH, TDS</span>
+            </div>
+            <div class="border border-outline-variant rounded-lg p-sm flex flex-col gap-1">
+              <span class="material-symbols-outlined text-primary text-[20px]">bolt</span>
+              <span class="font-label-caps text-label-caps text-primary">Actuators</span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant">Relay, I2C LCD (20×4), Buzzer</span>
+            </div>
+            <div class="border border-outline-variant rounded-lg p-sm flex flex-col gap-1">
+              <span class="material-symbols-outlined text-primary text-[20px]">dialpad</span>
+              <span class="font-label-caps text-label-caps text-primary">Input</span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant">4×4 Keypad</span>
+            </div>
+            <div class="border border-outline-variant rounded-lg p-sm flex flex-col gap-1">
+              <span class="material-symbols-outlined text-primary text-[20px]">folder</span>
+              <span class="font-label-caps text-label-caps text-primary">Storage</span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant">LittleFS & Preferences</span>
+            </div>
+          </div>
+          <div class="border border-outline-variant rounded-lg p-sm flex items-center gap-sm w-full justify-center">
+            <span class="material-symbols-outlined text-primary text-[20px]">wifi</span>
+            <span class="font-label-caps text-label-caps text-primary">Connectivity:</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant">WiFi & NTP Time Sync</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-wrap">
+        <div class="connector-line"></div>
+        <div class="connector-label">HTTP (price fetch) &amp; MQTT (measurement sync)</div>
+        <div class="connector-line"></div>
+        <div class="connector-arrow"></div>
+      </div>
+
+      <!-- BACKEND LAYER -->
+      <div class="tier-panel w-full max-w-4xl">
+        <div class="tier-header be"><span class="material-symbols-outlined text-[18px]">dns</span>Backend Layer</div>
+        <div class="tier-body flex flex-col md:flex-row gap-md items-stretch">
+          <div class="flex-1 border border-outline-variant rounded-lg overflow-hidden">
+            <div class="bg-tertiary-container text-on-tertiary px-md py-2 font-label-caps text-label-caps flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px]">bolt</span>Spring Boot (Java 21)
+            </div>
+            <div class="grid grid-cols-3 gap-2 p-sm">
+              <div class="flex flex-col items-center gap-1 text-center"><span class="material-symbols-outlined text-tertiary-container text-[20px]">verified_user</span><span class="font-body-sm text-body-sm text-on-surface-variant">REST APIs (JWT)</span></div>
+              <div class="flex flex-col items-center gap-1 text-center"><span class="material-symbols-outlined text-tertiary-container text-[20px]">podcasts</span><span class="font-body-sm text-body-sm text-on-surface-variant">MQTT Subscriber</span></div>
+              <div class="flex flex-col items-center gap-1 text-center"><span class="material-symbols-outlined text-tertiary-container text-[20px]">settings</span><span class="font-body-sm text-body-sm text-on-surface-variant">Business Logic</span></div>
+            </div>
+          </div>
+          <div class="flex items-center justify-center">
+            <span class="material-symbols-outlined text-outline">sync_alt</span>
+          </div>
+          <div class="border border-outline-variant rounded-lg p-md flex flex-col items-center justify-center gap-1 md:w-48">
+            <span class="material-symbols-outlined text-tertiary-container text-[28px]">database</span>
+            <span class="font-label-caps text-label-caps text-primary">PostgreSQL</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant">Database</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-wrap">
+        <div class="connector-line"></div>
+        <div class="connector-label">REST APIs (JSON over HTTP)</div>
+        <div class="connector-line"></div>
+        <div class="connector-arrow"></div>
+      </div>
+
+      <!-- FRONTEND LAYER -->
+      <div class="tier-panel w-full max-w-4xl">
+        <div class="tier-header fe"><span class="material-symbols-outlined text-[18px]">dashboard</span>Frontend Layer</div>
+        <div class="tier-body flex flex-col gap-md items-center">
+          <div class="hub-box bg-primary"><span class="material-symbols-outlined">hub</span>React.js Dashboard</div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-sm w-full">
+            <div class="border border-outline-variant rounded-lg p-sm flex flex-col items-center gap-1 text-center">
+              <span class="material-symbols-outlined text-primary text-[22px]">admin_panel_settings</span>
+              <span class="font-label-caps text-label-caps text-primary">Company Admin View</span>
+            </div>
+            <div class="border border-outline-variant rounded-lg p-sm flex flex-col items-center gap-1 text-center">
+              <span class="material-symbols-outlined text-primary text-[22px]">warehouse</span>
+              <span class="font-label-caps text-label-caps text-primary">Collection Center Admin View</span>
+            </div>
+            <div class="border border-outline-variant rounded-lg p-sm flex flex-col items-center gap-1 text-center">
+              <span class="material-symbols-outlined text-primary text-[22px]">agriculture</span>
+              <span class="font-label-caps text-label-caps text-primary">Farmer View</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-md mt-sm">
+      <div class="lift-card bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col gap-sm" data-aos="fade-up" data-aos-delay="0">
+        <span class="material-symbols-outlined text-primary text-[28px]">developer_board</span>
+        <h3 class="font-headline-md text-[18px] text-primary">Hardware</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">ESP32 device reads sensors (HX711, DS18B20, pH, TDS), applies the buoyancy + mixture-model calculation, and syncs over WiFi.</p>
+      </div>
+      <div class="lift-card bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col gap-sm" data-aos="fade-up" data-aos-delay="100">
+        <span class="material-symbols-outlined text-primary text-[28px]">dns</span>
+        <h3 class="font-headline-md text-[18px] text-primary">Backend</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">Spring Boot (Java 21) exposes JWT-secured REST APIs and an MQTT subscriber, backed by a PostgreSQL database.</p>
+      </div>
+      <div class="lift-card bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col gap-sm" data-aos="fade-up" data-aos-delay="200">
+        <span class="material-symbols-outlined text-primary text-[28px]">dashboard</span>
+        <h3 class="font-headline-md text-[18px] text-primary">Frontend</h3>
+        <p class="font-body-sm text-body-sm text-on-surface-variant">A React.js dashboard serving three role-based views: Company Admin, Collection Center Admin, and Farmer.</p>
+      </div>
+    </div>
+
+    <!-- Measurement flow -->
+    <div class="flex flex-col gap-lg mt-lg">
+      <h3 class="font-headline-md text-headline-md text-primary" data-aos="fade-up">Measurement Data Flow</h3>
+
+      <div class="flow-track py-md" data-aos="fade-up">
+        <div class="flow-step" data-aos="zoom-in" data-aos-delay="0">
+          <div class="flow-dot"><span class="material-symbols-outlined text-primary">person</span></div>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Farmer inputs volume</span>
+        </div>
+        <div class="flow-step" data-aos="zoom-in" data-aos-delay="100">
+          <div class="flow-dot"><span class="material-symbols-outlined text-primary">balance</span></div>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Plummet weighed in air, then latex</span>
+        </div>
+        <div class="flow-step" data-aos="zoom-in" data-aos-delay="200">
+          <div class="flow-dot"><span class="material-symbols-outlined text-primary">calculate</span></div>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Density → DRC% calculated</span>
+        </div>
+        <div class="flow-step" data-aos="zoom-in" data-aos-delay="300">
+          <div class="flow-dot"><span class="material-symbols-outlined text-primary">shield</span></div>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">pH/TDS quality check</span>
+        </div>
+        <div class="flow-step" data-aos="zoom-in" data-aos-delay="400">
+          <div class="flow-dot"><span class="material-symbols-outlined text-primary">receipt_long</span></div>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Invoice shown on LCD</span>
+        </div>
+        <div class="flow-step" data-aos="zoom-in" data-aos-delay="500">
+          <div class="flow-dot"><span class="material-symbols-outlined text-primary">wifi_tethering</span></div>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Published via MQTT</span>
+        </div>
+      </div>
+
+      <!-- Detailed native two-part flow diagram (replaces data-flow.png) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-lg items-start">
+        <!-- Part 1: Measurement Flow (State Machine) -->
+        <div class="tier-panel" data-aos="fade-right">
+          <div class="tier-header hw"><span class="material-symbols-outlined text-[18px]">science</span>Part 1 — Measurement Flow (State Machine)</div>
+          <div class="tier-body">
+            <div class="timeline">
+              <div class="timeline-item part1"><div class="timeline-dot">1</div>
+                <span class="font-label-caps text-label-caps text-primary block">Farmer inputs volume (litres)</span></div>
+              <div class="timeline-item part1"><div class="timeline-dot">2</div>
+                <span class="font-label-caps text-label-caps text-primary block">Weigh plummet in air (baseline)</span></div>
+              <div class="timeline-item part1"><div class="timeline-dot">3</div>
+                <span class="font-label-caps text-label-caps text-primary block">Weigh plummet in latex (30s stabilization)</span>
+                <div><span class="detail-chip"><span class="material-symbols-outlined text-[14px]">thermostat</span>Read temp, weight, pH (EMA)</span>
+                <span class="detail-chip"><span class="material-symbols-outlined text-[14px]">bolt</span>Toggle relay for TDS (no interference)</span></div></div>
+              <div class="timeline-item part1"><div class="timeline-dot">4</div>
+                <span class="font-label-caps text-label-caps text-primary block">Calculate density (displaced mass / 5.5cm³) → DRC%</span></div>
+              <div class="timeline-item part1"><div class="timeline-dot">5</div>
+                <span class="font-label-caps text-label-caps text-primary block">Fetch today's price (HTTP / flash)</span></div>
+              <div class="timeline-item part1"><div class="timeline-dot">6</div>
+                <span class="font-label-caps text-label-caps text-primary block">Calculate total amount (litres × DRC% × price)</span></div>
+              <div class="timeline-item part1"><div class="timeline-dot">7</div>
+                <span class="font-label-caps text-label-caps text-primary block">Quality control check (pH & TDS evaluation)</span>
+                <div><span class="alert-chip"><span class="material-symbols-outlined text-[14px]">warning</span>If adulterated: show alert</span></div></div>
+              <div class="timeline-item part1"><div class="timeline-dot">8</div>
+                <span class="font-label-caps text-label-caps text-primary block">Display invoice on LCD</span></div>
+              <div class="timeline-item part1"><div class="timeline-dot">9</div>
+                <span class="font-label-caps text-label-caps text-primary block">End: publish JSON via MQTT, or save to LittleFS</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Part 2: Store-and-Forward Flow (Offline Mode) -->
+        <div class="tier-panel" data-aos="fade-left">
+          <div class="tier-header fe"><span class="material-symbols-outlined text-[18px]">cloud_off</span>Part 2 — Store-and-Forward (Offline Mode)</div>
+          <div class="tier-body">
+            <div class="flex items-center gap-2 mb-md">
+              <span class="material-symbols-outlined text-error text-[18px]">wifi_off</span>
+              <span class="font-label-caps text-label-caps text-error uppercase">Triggered when Wi-Fi/MQTT connection is lost</span>
+            </div>
+            <div class="timeline">
+              <div class="timeline-item part2"><div class="timeline-dot">1</div>
+                <span class="font-label-caps text-label-caps text-primary block">Device processes data normally</span></div>
+              <div class="timeline-item part2"><div class="timeline-dot">2</div>
+                <span class="font-label-caps text-label-caps text-primary block">Append JSON to /backlog.txt on flash</span></div>
+              <div class="timeline-item part2"><div class="timeline-dot">3</div>
+                <span class="font-label-caps text-label-caps text-primary block">Wait in idle state</span></div>
+              <div class="timeline-item part2"><div class="timeline-dot">4</div>
+                <span class="font-label-caps text-label-caps text-primary block">Check connection every 10s</span></div>
+              <div class="timeline-item part2"><div class="timeline-dot">5</div>
+                <span class="font-label-caps text-label-caps text-primary block">End: if reconnected, stream /backlog.txt & clear file</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ HARDWARE DESIGN ══════════════ -->
+<section id="hardware-design" class="bg-surface-container-low py-xl">
+  <div class="px-margin-mobile lg:px-margin-desktop max-w-7xl mx-auto flex flex-col gap-lg">
+    <div class="flex flex-col gap-sm max-w-3xl" data-aos="fade-up">
+      <span class="font-label-caps text-label-caps text-on-tertiary-container uppercase tracking-widest">03 — Hardware</span>
+      <h2 class="font-headline-lg text-headline-lg text-primary">Hardware Design</h2>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-lg items-center">
+      <!-- Product photo with graceful placeholder fallback -->
+      <div class="rounded-xl overflow-hidden border border-outline-variant shadow-lg bg-surface-container-lowest aspect-[4/3] relative" data-aos="fade-right">
+        <img src="images/product-final.jpg" alt="Smart-Metrolac final device"
+             class="w-full h-full object-cover"
+             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="placeholder-box absolute inset-0" style="display:none">
+          <span class="material-symbols-outlined">image</span>
+          <span class="font-label-caps text-label-caps text-on-surface-variant">images/product-final.jpg</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Drop your final device photo here</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-md" data-aos="fade-left">
+        <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+          The device floats directly in the latex collection tank. Its buoyancy sensor measures displacement, and
+          onboard firmware applies Archimedes' buoyancy principle combined with a custom two-component mixture model
+          to convert that displacement into a DRC percentage — the same underlying physics as a Metrolac hydrometer,
+          fully automated and continuously logged.
+        </p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-sm">
+          <div class="lift-card flex items-start gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg p-sm">
+            <span class="material-symbols-outlined text-primary text-[20px]">water</span>
+            <div><span class="font-label-caps text-label-caps text-primary block">Buoyancy Sensor</span><span class="font-body-sm text-body-sm text-on-surface-variant">Displacement-based density readout</span></div>
+          </div>
+          <div class="lift-card flex items-start gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg p-sm">
+            <span class="material-symbols-outlined text-primary text-[20px]">memory</span>
+            <div><span class="font-label-caps text-label-caps text-primary block">Onboard MCU</span><span class="font-body-sm text-body-sm text-on-surface-variant">Runs the DRC computation firmware</span></div>
+          </div>
+          <div class="lift-card flex items-start gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg p-sm">
+            <span class="material-symbols-outlined text-primary text-[20px]">wifi</span>
+            <div><span class="font-label-caps text-label-caps text-primary block">Wireless Link</span><span class="font-body-sm text-body-sm text-on-surface-variant">Streams readings via MQTT</span></div>
+          </div>
+          <div class="lift-card flex items-start gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg p-sm">
+            <span class="material-symbols-outlined text-primary text-[20px]">battery_full</span>
+            <div><span class="font-label-caps text-label-caps text-primary block">Battery Powered</span><span class="font-body-sm text-body-sm text-on-surface-variant">Waterproof, field-deployable housing</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ SOFTWARE DESIGN ══════════════ -->
+<section id="software-design" class="bg-surface py-xl">
+  <div class="px-margin-mobile lg:px-margin-desktop max-w-7xl mx-auto flex flex-col gap-lg">
+    <div class="flex flex-col gap-sm max-w-3xl" data-aos="fade-up">
+      <span class="font-label-caps text-label-caps text-on-tertiary-container uppercase tracking-widest">04 — Software</span>
+      <h2 class="font-headline-lg text-headline-lg text-primary">Three Role-Based Dashboards</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        The same live data feeds three purpose-built views — one per role in the supply chain.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap gap-sm" id="dashboard-tabs" data-aos="fade-up">
+      <button data-target="dash-company" class="tab-btn active px-md py-sm rounded-full border border-primary font-label-caps text-label-caps uppercase">Company Admin</button>
+      <button data-target="dash-center" class="tab-btn px-md py-sm rounded-full border border-primary text-primary font-label-caps text-label-caps uppercase">Collection Center Admin</button>
+      <button data-target="dash-farmer" class="tab-btn px-md py-sm rounded-full border border-primary text-primary font-label-caps text-label-caps uppercase">Farmer</button>
+    </div>
+
+    <div class="rounded-xl overflow-hidden border border-outline-variant shadow-lg bg-surface-container-high relative h-[420px] sm:h-[520px] md:h-[650px]" data-aos="zoom-in">
+      <div id="dash-company" class="dash-panel absolute inset-0">
+        <img src="images/dashboard-company-admin.png" alt="Company Admin dashboard" class="w-full h-full object-contain p-2 sm:p-4" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="placeholder-box absolute inset-0" style="display:none">
+          <span class="material-symbols-outlined">dashboard</span>
+          <span class="font-label-caps text-label-caps text-on-surface-variant">images/dashboard-company-admin.png</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Company-wide DRC analytics & collection oversight</span>
+        </div>
+      </div>
+      <div id="dash-center" class="dash-panel absolute inset-0 hidden">
+        <img src="images/dashboard-collection-center.png" alt="Collection Center Admin dashboard" class="w-full h-full object-contain p-2 sm:p-4" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="placeholder-box absolute inset-0" style="display:none">
+          <span class="material-symbols-outlined">warehouse</span>
+          <span class="font-label-caps text-label-caps text-on-surface-variant">images/dashboard-collection-center.png</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Local intake tracking & farmer readings log</span>
+        </div>
+      </div>
+      <div id="dash-farmer" class="dash-panel absolute inset-0 hidden">
+        <img src="images/dashboard-farmer.png" alt="Farmer dashboard" class="w-full h-full object-contain p-2 sm:p-4" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <div class="placeholder-box absolute inset-0" style="display:none">
+          <span class="material-symbols-outlined">agriculture</span>
+          <span class="font-label-caps text-label-caps text-on-surface-variant">images/dashboard-farmer.png</span>
+          <span class="font-body-sm text-body-sm text-on-surface-variant">Personal DRC history & payment transparency</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ DEMONSTRATION ══════════════ -->
+<section id="demonstration" class="bg-surface-container-low py-xl">
+  <div class="px-margin-mobile lg:px-margin-desktop max-w-7xl mx-auto flex flex-col gap-lg">
+    <div class="flex flex-col gap-sm max-w-3xl" data-aos="fade-up">
+      <span class="font-label-caps text-label-caps text-on-tertiary-container uppercase tracking-widest">05 — Demonstration</span>
+      <h2 class="font-headline-lg text-headline-lg text-primary">See It In Action</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        A full walkthrough of taking a live DRC reading with the Smart-Metrolac device, from placement in the tank to the dashboard update.
+      </p>
+    </div>
+    <div class="w-full max-w-4xl" data-aos="zoom-in">
+      <div class="relative w-full pt-[56.25%] rounded-xl overflow-hidden border border-outline-variant shadow-lg bg-surface-container-highest">
+        <!-- TODO: replace VIDEO_ID_HERE with the demonstration YouTube video ID -->
+        <iframe class="absolute inset-0 w-full h-full"
+                src="https://www.youtube.com/embed/VIDEO_ID_HERE"
+                title="Smart-Metrolac — Live Reading Demonstration"
+                frameborder="0" allowfullscreen></iframe>
+      </div>
+      <p class="font-label-caps text-label-caps text-on-surface-variant mt-sm uppercase tracking-wide">▸ Swap the embed src above with your demonstration video link</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ TESTING / VALIDATION ══════════════ -->
+<section id="testing" class="bg-surface py-xl">
+  <div class="px-margin-mobile lg:px-margin-desktop max-w-7xl mx-auto flex flex-col gap-lg">
+    <div class="flex flex-col gap-sm max-w-3xl" data-aos="fade-up">
+      <span class="font-label-caps text-label-caps text-on-tertiary-container uppercase tracking-widest">06 — Validation</span>
+      <h2 class="font-headline-lg text-headline-lg text-primary">Field Validation — Lalan Rubber Estate</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Eight real-world latex samples, each measured by Smart-Metrolac and by the traditional Glass Metrolac hydrometer,
+        independently verified against the ISO 126 lab oven-drying reference method.
+      </p>
+    </div>
+
+    <!-- Mean/max error comparison -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+      <div class="lift-card bg-primary-container border border-primary rounded-lg p-md flex flex-col gap-sm" data-aos="fade-right">
+        <span class="font-label-caps text-label-caps text-tertiary-fixed uppercase tracking-widest">Smart-Metrolac</span>
+        <div class="flex gap-lg">
+          <div><span id="sm-mean-error" class="font-data-display text-headline-md text-on-primary-container block">±0.00%</span><span class="font-body-sm text-body-sm text-on-primary-container/70">Mean error</span></div>
+          <div><span id="sm-max-error" class="font-data-display text-headline-md text-on-primary-container block">±0.00%</span><span class="font-body-sm text-body-sm text-on-primary-container/70">Max error</span></div>
+        </div>
+      </div>
+      <div class="lift-card bg-surface-container-lowest border border-outline-variant rounded-lg p-md flex flex-col gap-sm" data-aos="fade-left">
+        <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Glass Metrolac (Traditional)</span>
+        <div class="flex gap-lg">
+          <div><span id="gl-mean-error" class="font-data-display text-headline-md text-error block">±0.00%</span><span class="font-body-sm text-body-sm text-on-surface-variant">Mean error</span></div>
+          <div><span id="gl-max-error" class="font-data-display text-headline-md text-error block">±0.00%</span><span class="font-body-sm text-body-sm text-on-surface-variant">Max error</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-lg">
+      <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md overflow-x-auto" data-aos="fade-right">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-outline-variant">
+              <th class="font-label-caps text-label-caps text-on-surface-variant uppercase py-2 pr-2">Sample</th>
+              <th class="font-label-caps text-label-caps text-on-surface-variant uppercase py-2 pr-2">Lab Oven (%)</th>
+              <th class="font-label-caps text-label-caps text-on-surface-variant uppercase py-2 pr-2">Smart-Metrolac (%)</th>
+              <th class="font-label-caps text-label-caps text-on-surface-variant uppercase py-2 pr-2">Dev.</th>
+              <th class="font-label-caps text-label-caps text-on-surface-variant uppercase py-2 pr-2">Glass Metrolac (%)</th>
+              <th class="font-label-caps text-label-caps text-on-surface-variant uppercase py-2">Dev.</th>
+            </tr>
+          </thead>
+          <tbody id="validation-table-body" class="font-data-display text-[14px]"></tbody>
+        </table>
+      </div>
+      <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md" data-aos="fade-left">
+        <canvas id="validation-chart" class="w-full" height="260"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ BUDGET ══════════════ -->
+<section id="budget" class="bg-surface-container-low py-xl">
+  <div class="px-margin-mobile lg:px-margin-desktop max-w-7xl mx-auto flex flex-col gap-lg">
+    <div class="flex flex-col gap-sm max-w-3xl" data-aos="fade-up">
+      <span class="font-label-caps text-label-caps text-on-tertiary-container uppercase tracking-widest">07 — Budget</span>
+      <h2 class="font-headline-lg text-headline-lg text-primary">Estimated Budget</h2>
+    </div>
+    <!-- Native budget breakdown (replaces budget.png) -->
+    <div class="flex flex-col gap-md">
+
+      <div class="budget-category" data-aos="fade-up" data-aos-delay="0">
+        <div class="budget-category-header">
+          <span class="material-symbols-outlined text-primary">developer_board</span>
+          <span class="font-headline-md text-[16px] text-primary">Microcontroller &amp; Comm.</span>
+        </div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">ESP32 Dev Module</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 1,490</span></div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">Data Cable</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 390</span></div>
+      </div>
+
+      <div class="budget-category" data-aos="fade-up" data-aos-delay="100">
+        <div class="budget-category-header">
+          <span class="material-symbols-outlined text-tertiary-container">science</span>
+          <span class="font-headline-md text-[16px] text-primary">Sensors &amp; Modules</span>
+        </div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">Analog pH Sensor</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 6,150</span></div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">Analog TDS Sensor</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 2,650</span></div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">Load Cell (1kg) + HX711 Amplifier</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 940</span></div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">DS18B20 Temperature Sensor</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 360</span></div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">1-Channel Relay Module</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 480</span></div>
+      </div>
+
+      <div class="budget-category" data-aos="fade-up" data-aos-delay="200">
+        <div class="budget-category-header">
+          <span class="material-symbols-outlined text-primary">dialpad</span>
+          <span class="font-headline-md text-[16px] text-primary">User Interface (I/O)</span>
+        </div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">20×4 LCD Display + I2C Module</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 1,410</span></div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">4×4 Switch Keypad</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 260</span></div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">Passive Buzzer Module</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 140</span></div>
+      </div>
+
+      <div class="budget-category" data-aos="fade-up" data-aos-delay="300">
+        <div class="budget-category-header">
+          <span class="material-symbols-outlined text-tertiary-container">inventory_2</span>
+          <span class="font-headline-md text-[16px] text-primary">Enclosure &amp; Consumables</span>
+        </div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">Custom Plastic Enclosure</span><span class="font-data-display text-[14px] text-on-surface-variant">Qty 1 &nbsp;·&nbsp; Rs. 2,100</span></div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">Breadboard &amp; Jumper Wires</span><span class="font-data-display text-[14px] text-on-surface-variant">Lot &nbsp;·&nbsp; Rs. 825</span></div>
+        <div class="budget-row"><span class="font-body-md text-body-md text-on-surface">Nuts, Bolts, Heat Shrink, Solder</span><span class="font-data-display text-[14px] text-on-surface-variant">Lot &nbsp;·&nbsp; Rs. 520</span></div>
+      </div>
+
+      <div class="budget-total-bar" data-aos="fade-up">
+        <div class="flex items-center gap-sm">
+          <span class="material-symbols-outlined">calculate</span>
+          <span class="font-label-caps text-label-caps uppercase tracking-widest">Total Estimated Cost</span>
+        </div>
+        <span class="font-data-display text-headline-md">Rs. 17,715</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ TEAM ══════════════ -->
+<section id="team" class="bg-surface py-xl">
+  <div class="px-margin-mobile lg:px-margin-desktop max-w-7xl mx-auto flex flex-col gap-lg">
+    <div class="flex flex-col gap-sm max-w-3xl" data-aos="fade-up">
+      <span class="font-label-caps text-label-caps text-on-tertiary-container uppercase tracking-widest">08 — Team</span>
+      <h2 class="font-headline-lg text-headline-lg text-primary">Group 16</h2>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-md" id="team-grid">
+      <!-- populated by main.js from data/index.json -->
+    </div>
+    <div class="mt-md bg-primary-container border border-primary rounded-lg p-md flex items-center gap-md max-w-md" id="supervisor-card" data-aos="fade-up">
+      <!-- populated by main.js from data/index.json -->
+    </div>
+  </div>
+</section>
+
+</div>
+</main>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer class="w-full bg-primary py-xl">
+  <div class="px-margin-mobile lg:px-margin-desktop max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-lg">
+    <div class="flex flex-col gap-sm">
+      <div class="flex items-center gap-sm">
+        <img src="images/logo.png" alt="Smart-Metrolac logo" class="h-7 w-7 object-contain"
+             onerror="this.style.display='none'">
+        <span class="font-headline-md text-headline-md text-on-primary">Smart-Metrolac</span>
+      </div>
+      <p class="font-body-sm text-body-sm text-on-primary/70 max-w-xs">IoT-powered Dry Rubber Content measurement and quality control for rubber estates.</p>
+    </div>
+    <div class="flex flex-col gap-sm">
+      <h4 class="font-label-caps text-label-caps text-on-primary/60 uppercase">Project</h4>
+      <ul class="flex flex-col gap-xs font-body-sm text-body-sm text-on-primary/70">
+        <li><a href="https://github.com/cepdnaclk/e21-3yp-Smart-Metrolac" class="hover:text-on-primary transition-colors" target="_blank">GitHub Repository</a></li>
+        <li><a href="#testing" class="hover:text-on-primary transition-colors">Validation Results</a></li>
+        <li><a href="#team" class="hover:text-on-primary transition-colors">Team</a></li>
+      </ul>
+    </div>
+    <div class="flex flex-col gap-sm">
+      <h4 class="font-label-caps text-label-caps text-on-primary/60 uppercase">System Status</h4>
+      <div class="flex items-center gap-xs">
+        <span class="w-2 h-2 rounded-full bg-tertiary-fixed animate-pulse"></span>
+        <span class="font-body-sm text-body-sm text-on-primary font-bold">All Systems Operational</span>
+      </div>
+    </div>
+  </div>
+  <div class="px-margin-mobile lg:px-margin-desktop max-w-7xl mx-auto mt-lg pt-md border-t border-on-primary/10 flex justify-between items-center">
+    <p class="font-label-caps text-label-caps text-on-primary/50">© 2026 Smart-Metrolac — Department of Computer Engineering, University of Peradeniya</p>
+  </div>
+</footer>
+
+<!-- Vendor -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Site JS -->
+<script src="assets/js/main.js"></script>
+</body>
+</html>

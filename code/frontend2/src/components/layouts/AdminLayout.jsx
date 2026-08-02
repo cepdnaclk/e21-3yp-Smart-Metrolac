@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
+import { Bell, ChevronRight } from 'lucide-react'
 import { useLogout } from '../../utils/useLogout'
 
 // Nav items for the company admin section.
@@ -10,22 +11,43 @@ const NAV_LINKS = [
   { label: 'Change Password',   to: '/change-password'   },
 ]
 
+// Parse the last URL segment into a Title Case page name.
+// e.g. /admin/rubber-price → "Rubber Price"
+function getPageName(pathname) {
+  const segment = pathname.split('/').filter(Boolean).pop() || ''
+  return segment
+    .split('-')
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+}
+
+// Map the first character of a username to a role label.
+function getRoleLabel(username) {
+  const c = username?.charAt(0).toUpperCase()
+  if (c === 'A') return 'Company Admin'
+  if (c === 'M') return 'Center Admin'
+  if (c === 'F') return 'Farmer'
+  return ''
+}
+
 function AdminLayout({ children }) {
   const { user }     = useSelector((state) => state.auth)
   const handleLogout = useLogout()
+  const location     = useLocation()
+  const pageName     = getPageName(location.pathname)
 
   // ── Styles ─────────────────────────────────────────────────────────────────
 
   const containerStyle = {
     display: 'flex',
     flexDirection: 'row',
-    minHeight: '100vh',
+    height: '100vh',
+    overflow: 'hidden',
     fontFamily: 'var(--font-sans)',
   }
 
   const sidebarStyle = {
     width: '240px',
-    minHeight: '100vh',
     backgroundColor: 'var(--color-primary)',
     display: 'flex',
     flexDirection: 'column',
@@ -37,25 +59,14 @@ function AdminLayout({ children }) {
     borderBottom: '1px solid rgba(255,255,255,0.15)',
   }
 
-  const appNameStyle = {
-    color: '#ffffff',
-    fontSize: '1.1rem',
-    fontWeight: '700',
-    margin: 0,
-  }
-
-  const subtitleStyle = {
-    color: 'rgba(255,255,255,0.65)',
-    fontSize: '0.75rem',
-    marginTop: '0.25rem',
-  }
-
   const navStyle = {
     flex: 1,
     padding: '1rem 0.75rem',
     display: 'flex',
     flexDirection: 'column',
     gap: '0.25rem',
+    overflowY: 'auto',
+    minHeight: 0,
   }
 
   // Base style shared by all nav links; active overrides are applied via NavLink className.
@@ -94,36 +105,31 @@ function AdminLayout({ children }) {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    minWidth: 0,  // prevents flex children from overflowing
+    minWidth: 0,
+    overflow: 'hidden',
+    minHeight: 0,
   }
 
   const topbarStyle = {
-    height: '56px',
-    backgroundColor: 'var(--color-surface)',
-    borderBottom: '1px solid var(--color-border)',
+    position: 'sticky',
+    top: 0,
+    zIndex: 20,
+    height: '64px',
+    backgroundColor: '#F2F7EC',
+    borderBottom: '1px solid #E3EDD8',
+    boxShadow: 'none',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: '0 1.5rem',
+    padding: '0 32px',
     flexShrink: 0,
   }
-
-  const topbarTitleStyle = {
-    fontSize: '0.95rem',
-    fontWeight: '600',
-    color: 'var(--color-text)',
-  }
-
-  const topbarUserStyle = {
-    fontSize: '0.875rem',
-    color: 'var(--color-text-muted)',
-  }
-
   const contentStyle = {
     flex: 1,
     backgroundColor: 'var(--color-bg)',
     padding: '1.5rem',
     overflowY: 'auto',
+    minHeight: 0,
   }
 
   return (
@@ -132,8 +138,7 @@ function AdminLayout({ children }) {
       {/* ── Sidebar ────────────────────────────────────────────────────────── */}
       <aside style={sidebarStyle}>
         <div style={sidebarHeaderStyle}>
-          <p style={appNameStyle}>Smart-Metrolac</p>
-          <p style={subtitleStyle}>Company Admin</p>
+          <img src="/logo.png" alt="Smart-Metrolac" style={{ width: '100%', objectFit: 'contain', display: 'block' }} />
         </div>
 
         {/* Nav links — NavLink automatically sets isActive when the URL matches. */}
@@ -155,10 +160,47 @@ function AdminLayout({ children }) {
       {/* ── Main area ──────────────────────────────────────────────────────── */}
       <div style={mainStyle}>
 
-        {/* Topbar */}
+        {/* ── Topbar ─────────────────────────────────────────────────────── */}
         <header style={topbarStyle}>
-          <span style={topbarTitleStyle}>Company Admin Portal</span>
-          <span style={topbarUserStyle}>Welcome, {user?.username}</span>
+
+          {/* Left: accent dot · role title · chevron · page name */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#42C23D' }} />
+            <span style={{ fontSize: '11px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#5C7A45' }}>
+              Company Admin
+            </span>
+            <ChevronRight size={14} color="#A9BF93" />
+            <span style={{ fontSize: '16px', fontWeight: 600, color: '#173404' }}>
+              {pageName}
+            </span>
+          </div>
+
+          {/* Right: bell · divider · user chip */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+
+            <button
+              className="hover:bg-[#E3EDD8]"
+              style={{ width: '36px', height: '36px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', cursor: 'pointer', transition: 'background-color 0.15s' }}
+            >
+              <Bell size={18} color="#5C7A45" />
+            </button>
+
+            <div style={{ width: '1px', height: '24px', backgroundColor: '#D5E3C4' }} />
+
+            <div
+              className="hover:bg-[#E9F1DF]"
+              style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', transition: 'background-color 0.15s' }}
+            >
+              <div style={{ width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, flexShrink: 0, background: 'linear-gradient(135deg, #173404 0%, #2d5a0c 100%)', color: '#EAF3DE' }}>
+                {user?.username?.charAt(0).toUpperCase()}
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <span style={{ fontSize: '14px', fontWeight: 600, color: '#173404', lineHeight: 1.25 }}>{user?.username}</span>
+                <span style={{ fontSize: '12px', color: '#5C7A45', lineHeight: 1.25 }}>{getRoleLabel(user?.username)}</span>
+              </div>
+            </div>
+
+          </div>
         </header>
 
         {/* Page content rendered here by child routes. */}

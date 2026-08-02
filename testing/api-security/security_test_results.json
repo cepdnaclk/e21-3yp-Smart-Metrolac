@@ -1,0 +1,51 @@
+[
+  {
+    "test": "Valid token, correct role -> GET /api/invoices",
+    "expected": 200,
+    "actual": 200,
+    "passed": true,
+    "note": "(positive control \u2014 if this fails, nothing else below is meaningful)"
+  },
+  {
+    "test": "No Authorization header -> GET /api/invoices",
+    "expected": 403,
+    "actual": 403,
+    "passed": true,
+    "note": "(this app returns 403 for all auth failures, not 401 \u2014 see note below)"
+  },
+  {
+    "test": "Malformed token -> GET /api/invoices",
+    "expected": 403,
+    "actual": 403,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "test": "Tampered signature -> GET /api/invoices",
+    "expected": 403,
+    "actual": 403,
+    "passed": true,
+    "note": "(proves signature is actually verified, not just presence-checked)"
+  },
+  {
+    "test": "Expired token (valid signature) -> GET /api/invoices",
+    "expected": 403,
+    "actual": 403,
+    "passed": true,
+    "note": ""
+  },
+  {
+    "test": "Valid signature, wrong role (farmer) -> GET /api/invoices",
+    "expected": 403,
+    "actual": 403,
+    "passed": true,
+    "note": "(signature is genuinely valid \u2014 this tests role authorization, not authentication)"
+  },
+  {
+    "test": "Real company_admin token -> POST /api/invoices (requires collection_center_admin)",
+    "expected": 403,
+    "actual": 403,
+    "passed": true,
+    "note": "(uses your REAL account and REAL token \u2014 no forging \u2014 proves role enforcement end to end)"
+  }
+]

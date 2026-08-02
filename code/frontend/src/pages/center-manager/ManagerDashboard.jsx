@@ -72,7 +72,7 @@ const ManagerDashboard = () => {
         
         {/* Active Device Status Card */}
         {deviceStatus && (
-          <div className="bg-white border border-emerald-200 px-4 py-3 rounded-lg shadow-sm flex items-center space-x-3">
+          <div className="bg-white/80 backdrop-blur-sm border border-emerald-200/30 px-4 py-3 rounded-lg shadow-sm flex items-center space-x-3">
             <span className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
@@ -88,7 +88,7 @@ const ManagerDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* Create Invoice Form */}
-        <div className="lg:col-span-5 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <div className="lg:col-span-5 bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-slate-200/20">
           <h3 className="text-lg font-bold text-slate-800 mb-6 border-b pb-2">New Latex Collection</h3>
           
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -123,7 +123,7 @@ const ManagerDashboard = () => {
                 
                 {/* The Dropdown List */}
                 {isDropdownOpen && (
-                  <ul className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                  <ul className="absolute z-10 w-full mt-1 bg-white/95 border border-slate-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
                     {filteredFarmers.length > 0 ? (
                       filteredFarmers.map((f) => (
                         <li
@@ -197,7 +197,7 @@ const ManagerDashboard = () => {
         </div>
 
         {/* Recent Invoices Table */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+        <div className="lg:col-span-7 bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-sm border border-slate-200/20">
           <h3 className="text-lg font-bold text-slate-800 mb-4">Today's Collections</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
