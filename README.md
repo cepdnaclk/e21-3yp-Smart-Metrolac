@@ -3,11 +3,22 @@
 
 > **3rd Year Engineering Project · Group 16 · Department of Computer Engineering · University of Peradeniya**
 
-[![Milestone](https://img.shields.io/badge/Milestone-2%20%E2%80%94%20In%20Progress-1db954?style=flat-square)](.)
+[![Milestone](https://img.shields.io/badge/Milestone-2%20%E2%80%94%20Complete-1db954?style=flat-square)](.)
 [![Backend](https://img.shields.io/badge/Backend-100%25%20Complete-1db954?style=flat-square)](.)
-[![Firmware](https://img.shields.io/badge/Firmware-90%25%20Complete-0fa843?style=flat-square)](.)
-[![Frontend](https://img.shields.io/badge/Frontend-In%20Progress-e6b800?style=flat-square)](.)
+[![Firmware](https://img.shields.io/badge/Firmware-100%25%20Complete-1db954?style=flat-square)](.)
+[![Frontend](https://img.shields.io/badge/Frontend-100%25%20Complete-1db954?style=flat-square)](.)
+[![Deployed](https://img.shields.io/badge/Status-Live-1db954?style=flat-square)](https://smartmetrolac.vercel.app)
 [![License](https://img.shields.io/badge/License-Academic-blue?style=flat-square)](.)
+
+---
+
+## 🚀 Live Deployment
+
+| | |
+|---|---|
+| **Live Dashboard** | [smartmetrolac.vercel.app](https://smartmetrolac.vercel.app) |
+| **Project Showcase Site** | [cepdnaclk.github.io/e21-3yp-Smart-Metrolac](https://cepdnaclk.github.io/e21-3yp-Smart-Metrolac/) |
+| **Backend** | Spring Boot on AWS EC2 (MQTT via HiveMQ Cloud, PostgreSQL via Supabase) |
 
 ---
 
@@ -272,10 +283,13 @@ Reconnected → Stream /backlog.txt to backend → Clear file
 | Component | Status | Notes |
 |-----------|--------|-------|
 | **Backend** | ✅ 100% Complete | 9-table DB, JWT auth, MQTT pipeline, auto-payments |
-| **Hardware / Firmware** | 🔄 90% Complete | Sensors integrated, relay isolation solved, Store-and-Forward tested. Pending: final housing & calibration |
-| **Frontend** | 🔄 80% Complete | Tech stack set up. Target: 2 weeks |
+| **Hardware / Firmware** | ✅ 100% Complete | Sensors integrated, relay isolation solved, Store-and-Forward implemented and tested |
+| **Frontend** | ✅ 100% Complete | All three role-based dashboards (Company Admin, Collection Center Admin, Farmer) built and wired to the live backend |
+| **Deployment** | ✅ Live | Frontend on Vercel, backend on AWS EC2, MQTT via HiveMQ Cloud, database via Supabase PostgreSQL |
 
 ### Testing Status
+
+**Manual Verification**
 
 | Test Area | Status |
 |-----------|--------|
@@ -291,6 +305,21 @@ Reconnected → Stream /backlog.txt to backend → Clear file
 | End-to-End Device → Database | ✅ Passed |
 | Frontend Login / Role Routing | ✅ Passed |
 
+**Automated Test Suite**
+
+Full scripts, raw results, and charts for each of these live in [`/testing`](testing/).
+
+| Test | Result | Details |
+|------|--------|---------|
+| **Accuracy / Field Validation** | ✅ ±0.74% mean error, ±2.10% max error | 8 real Lalan Rubber samples vs. ISO 126 lab standard — see [Testing section on project site](docs/) |
+| **Unit Testing** | ✅ 38/38 tests passing, 0 failures | JUnit + JaCoCo coverage across core services — [`/testing/unit-tests`](testing/unit-tests/) |
+| **Scalability** | ✅ 500 messages, 0% data loss | 50 simulated devices × 10 readings, full delivery confirmed via API — [`/testing/scalability-test`](testing/scalability-test/) |
+| **Latency** | ✅ Median 53ms, 95th %ile 145ms | 20 single-reading trials, device-publish to dashboard-visible — [`/testing/latency`](testing/latency/) |
+| **API Security / Access Control** | ✅ 7/7 checks passed | Auth, tampered/expired JWTs, role-based authorization enforcement — [`/testing/api-security`](testing/api-security/) |
+| **Offline / Store-and-Forward (backend)** | ✅ 15/15 buffered readings recovered, 0% loss | Simulated backlog-replay burst matching real firmware sync behavior — [`/testing/offline-sync`](testing/offline-sync/) |
+| **Offline / Store-and-Forward (device)** | 🔄 Protocol ready, pending hardware | [`/testing/hardware-tests`](testing/hardware-tests/) |
+| **Sensor Repeatability** | 🔄 Protocol ready, pending hardware | [`/testing/hardware-tests`](testing/hardware-tests/) |
+
 ---
 
 ## 👥 The Team
@@ -303,6 +332,8 @@ Reconnected → Stream /backlog.txt to backend → Clear file
 | K.A.P.M.PERERA | E/21/292 |
 | RUKSHAN A.D. | E/21/339 |
 | SURIYAPPERUMA H.D. | E/21/453 |
+
+**Project Supervisor:** Ms. Yasodha Vimukthi
 
 ---
 
