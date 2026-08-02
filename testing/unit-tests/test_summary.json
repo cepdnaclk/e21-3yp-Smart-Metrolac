@@ -1,0 +1,403 @@
+{
+  "total_tests": 38,
+  "passed": 38,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "total_time_sec": 10.773,
+  "suites": [
+    {
+      "class": "com.smartmetrolac.backend.service.UserServiceTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_sec": 8.142
+    },
+    {
+      "class": "com.smartmetrolac.backend.testing.FarmerServiceTest",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_sec": 0.282
+    },
+    {
+      "class": "com.smartmetrolac.backend.testing.MqttMeasurementServiceTest",
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_sec": 2.221
+    },
+    {
+      "class": "com.smartmetrolac.backend.testing.PaymentServiceTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_sec": 0.112
+    },
+    {
+      "class": "com.smartmetrolac.backend.testing.UserServiceTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time_sec": 0.016
+    }
+  ],
+  "overall_line_coverage_pct": 28.07017543859649,
+  "coverage_by_class": [
+    {
+      "package": "com.smartmetrolac.backend.entity",
+      "class": "CollectionCenter",
+      "line_missed": 16,
+      "line_covered": 3,
+      "line_coverage_pct": 15.789473684210526
+    },
+    {
+      "package": "com.smartmetrolac.backend.entity",
+      "class": "UserEntity",
+      "line_missed": 1,
+      "line_covered": 18,
+      "line_coverage_pct": 94.73684210526315
+    },
+    {
+      "package": "com.smartmetrolac.backend.entity",
+      "class": "Alert",
+      "line_missed": 10,
+      "line_covered": 15,
+      "line_coverage_pct": 60.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.entity",
+      "class": "RubberPrice",
+      "line_missed": 9,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.entity",
+      "class": "Farmer",
+      "line_missed": 0,
+      "line_covered": 16,
+      "line_coverage_pct": 100.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.entity",
+      "class": "Company",
+      "line_missed": 10,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.entity",
+      "class": "Payment",
+      "line_missed": 0,
+      "line_covered": 16,
+      "line_coverage_pct": 100.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.entity",
+      "class": "Device",
+      "line_missed": 2,
+      "line_covered": 5,
+      "line_coverage_pct": 71.42857142857143
+    },
+    {
+      "package": "com.smartmetrolac.backend.entity",
+      "class": "Invoice",
+      "line_missed": 2,
+      "line_covered": 32,
+      "line_coverage_pct": 94.11764705882352
+    },
+    {
+      "package": "com.smartmetrolac.backend.config",
+      "class": "SecurityConfig",
+      "line_missed": 26,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.config",
+      "class": "GlobalExceptionHandler",
+      "line_missed": 14,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.config",
+      "class": "JwtUtil",
+      "line_missed": 30,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.config",
+      "class": "GlobalExceptionHandler.ErrorResponse",
+      "line_missed": 1,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.config",
+      "class": "JwtAuthFilter",
+      "line_missed": 14,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.config",
+      "class": "CustomUserDetailsService",
+      "line_missed": 9,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.config",
+      "class": "CorsConfig",
+      "line_missed": 7,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.mqtt",
+      "class": "MqttMeasurementService",
+      "line_missed": 6,
+      "line_covered": 83,
+      "line_coverage_pct": 93.25842696629213
+    },
+    {
+      "package": "com.smartmetrolac.backend.auth",
+      "class": "AuthController",
+      "line_missed": 20,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.auth",
+      "class": "LoginRequest",
+      "line_missed": 7,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.service",
+      "class": "RubberPriceService",
+      "line_missed": 19,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.service",
+      "class": "FarmerService",
+      "line_missed": 15,
+      "line_covered": 22,
+      "line_coverage_pct": 59.45945945945946
+    },
+    {
+      "package": "com.smartmetrolac.backend.service",
+      "class": "InvoiceService",
+      "line_missed": 40,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.service",
+      "class": "AlertService",
+      "line_missed": 14,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.service",
+      "class": "UserService",
+      "line_missed": 5,
+      "line_covered": 11,
+      "line_coverage_pct": 68.75
+    },
+    {
+      "package": "com.smartmetrolac.backend.service",
+      "class": "PaymentService",
+      "line_missed": 8,
+      "line_covered": 19,
+      "line_coverage_pct": 70.37037037037037
+    },
+    {
+      "package": "com.smartmetrolac.backend.admin.dto",
+      "class": "AdminDashboardResponse.Kpis",
+      "line_missed": 1,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.admin.dto",
+      "class": "AdminDashboardResponse.CenterMonthlyLitres",
+      "line_missed": 1,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.admin.dto",
+      "class": "AdminDashboardResponse",
+      "line_missed": 1,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.admin.dto",
+      "class": "AdminDashboardResponse.SystemAlert",
+      "line_missed": 1,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend",
+      "class": "MqttConfig",
+      "line_missed": 33,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend",
+      "class": "BackendApplication",
+      "line_missed": 3,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend",
+      "class": "TestController",
+      "line_missed": 3,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.admin",
+      "class": "AdminDashboardController",
+      "line_missed": 4,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.admin",
+      "class": "AdminDashboardService",
+      "line_missed": 30,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "FarmerController.CreateFarmerRequest",
+      "line_missed": 9,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "UserController.ChangePasswordRequest",
+      "line_missed": 5,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "RubberPriceController.SetPriceRequest",
+      "line_missed": 5,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "RubberPriceController",
+      "line_missed": 6,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "AlertResponse",
+      "line_missed": 21,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "FarmerController.UpdateFarmerRequest",
+      "line_missed": 7,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "InvoiceController.CreateInvoiceRequest",
+      "line_missed": 21,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "FarmerController",
+      "line_missed": 28,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "InvoiceResponse",
+      "line_missed": 29,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "AlertController",
+      "line_missed": 19,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "PaymentController",
+      "line_missed": 23,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "UserController",
+      "line_missed": 8,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "InvoiceController",
+      "line_missed": 25,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "RubberPriceResponse",
+      "line_missed": 13,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "FarmerResponse",
+      "line_missed": 19,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    },
+    {
+      "package": "com.smartmetrolac.backend.controller",
+      "class": "PaymentResponse",
+      "line_missed": 15,
+      "line_covered": 0,
+      "line_coverage_pct": 0.0
+    }
+  ]
+}

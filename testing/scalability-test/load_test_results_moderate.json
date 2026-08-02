@@ -1,0 +1,19 @@
+{
+  "num_devices": 20,
+  "messages_per_device": 5,
+  "total_expected": 100,
+  "sent_ok": 100,
+  "send_failures": 0,
+  "send_elapsed_sec": 10.093582406000223,
+  "publish_throughput_msgs_per_sec": 9.907285241021471,
+  "delivered": 100,
+  "loss": 0,
+  "loss_pct": 0.0,
+  "time_to_full_delivery_sec": 5.20999947184464e-07,
+  "delivery_curve": [
+    [
+      5.20999947184464e-07,
+      100
+    ]
+  ]
+}
