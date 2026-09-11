@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (grid) {
       grid.innerHTML = data.team.map((m, i) => `
         <div class="lift-card flex flex-col items-center gap-sm bg-surface-container-lowest border border-outline-variant rounded-lg p-md text-center" data-aos="fade-up" data-aos-delay="${i * 100}">
-          <div class="w-20 h-20 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+          <div class="img-zoom-wrap w-20 h-20 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
             <img src="images/team-${i + 1}.jpg" alt="${m.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
             <span class="material-symbols-outlined text-outline" style="display:none">person</span>
           </div>
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const supCard = document.getElementById('supervisor-card');
     if (supCard && data.supervisors && data.supervisors.length) {
       supCard.innerHTML = data.supervisors.map(s => `
-        <div class="w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
+        <div class="img-zoom-wrap w-14 h-14 rounded-full bg-surface-container-highest flex items-center justify-center overflow-hidden">
           <img src="images/supervisor.jpg" alt="${s.name}" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
           <span class="material-symbols-outlined text-outline" style="display:none">school</span>
         </div>
