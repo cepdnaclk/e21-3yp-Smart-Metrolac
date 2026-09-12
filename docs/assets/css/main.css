@@ -164,3 +164,8 @@ body { overscroll-behavior: none; }
   display: flex; justify-content: space-between; align-items: center;
   background: #061b0e; color: #fff; border-radius: .5rem; padding: 18px 24px;
 }
+
+/* ── Image zoom on hover (team, supervisor, achievement photos) ── */
+.img-zoom-wrap { overflow: hidden; }
+.img-zoom-wrap img { transition: transform .5s ease; }
+.img-zoom-wrap:hover img { transform: scale(1.1); }
