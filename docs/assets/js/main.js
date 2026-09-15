@@ -187,7 +187,10 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <span class="font-label-caps text-label-caps text-primary">${titleCaseName(m.name)}</span>
           <span class="font-body-sm text-body-sm text-on-surface-variant">${m.eNumber}</span>
-          ${m.email ? `<a href="mailto:${m.email}" class="material-symbols-outlined text-on-surface-variant text-[16px] hover:text-primary transition-colors">mail</a>` : ''}
+          ${m.email ? `<span class="font-body-sm text-body-sm text-on-surface-variant">${m.email}</span>` : ''}
+          ${m.linkedin ? `<a href="${m.linkedin}" target="_blank" rel="noopener" title="LinkedIn" class="mt-1 text-on-surface-variant hover:text-primary transition-colors">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.119 20.452H3.554V9h3.565v11.452z"/></svg>
+          </a>` : ''}
         </div>`).join('');
     }
 
