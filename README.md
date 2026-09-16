@@ -317,8 +317,8 @@ Full scripts, raw results, and charts for each of these live in [`/testing`](tes
 | **Latency** | ✅ Median 53ms, 95th %ile 145ms | 20 single-reading trials, device-publish to dashboard-visible — [`/testing/latency`](testing/latency/) |
 | **API Security / Access Control** | ✅ 7/7 checks passed | Auth, tampered/expired JWTs, role-based authorization enforcement — [`/testing/api-security`](testing/api-security/) |
 | **Offline / Store-and-Forward (backend)** | ✅ 15/15 buffered readings recovered, 0% loss | Simulated backlog-replay burst matching real firmware sync behavior — [`/testing/offline-sync`](testing/offline-sync/) |
-| **Offline / Store-and-Forward (device)** | 🔄 Protocol ready, pending hardware | [`/testing/hardware-tests`](testing/hardware-tests/) |
-| **Sensor Repeatability** | 🔄 Protocol ready, pending hardware | [`/testing/hardware-tests`](testing/hardware-tests/) |
+| **Offline / Store-and-Forward (device)** | ✅ Done  | [`/testing/hardware-tests`](testing/hardware-tests/) |
+| **Sensor Repeatability** | ✅ Done | [`/testing/hardware-tests`](testing/hardware-tests/) |
 
 ---
 
