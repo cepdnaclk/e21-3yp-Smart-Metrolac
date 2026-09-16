@@ -3,22 +3,26 @@
         {
             "name": "MANILGAMA N.C.",
             "email": "e21254@eng.pdn.ac.lk",
-            "eNumber": "E/21/254"
-        },  
+            "eNumber": "E/21/254",
+            "linkedin": "https://www.linkedin.com/in/nandun-manilgama-1711b634b"
+        },
         {
             "name": "K.A.P.M.PERERA",
             "email": "e21292@eng.pdn.ac.lk",
-            "eNumber": "E/21/292"
+            "eNumber": "E/21/292",
+            "linkedin": "https://www.linkedin.com/in/manodya-perera"
         },
         {
             "name": "RUKSHAN A.D.",
             "email": "e21339@eng.pdn.ac.lk",
-            "eNumber": "E/21/339"
+            "eNumber": "E/21/339",
+            "linkedin": "https://www.linkedin.com/in/dananja-rukshan-477702346"
         },
         {
             "name": "SURIYAPPERUMA H.D.",
             "email": "e21453@eng.pdn.ac.lk",
-            "eNumber": "E/21/453"
+            "eNumber": "E/21/453",
+            "linkedin": "https://www.linkedin.com/in/hiyumi-suriyapperuma-2b2442380"
         }
     ],
     "supervisors": [

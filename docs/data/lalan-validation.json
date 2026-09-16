@@ -1,0 +1,14 @@
+{
+  "samples": [
+    { "id": "Kg1",  "lab": 32.40, "smartMetrolac": 32.97, "glassMetrolac": 34 },
+    { "id": "Kg2",  "lab": 28.38, "smartMetrolac": 29.76, "glassMetrolac": 28 },
+    { "id": "Ag2",  "lab": 38.50, "smartMetrolac": 38.27, "glassMetrolac": 38 },
+    { "id": "GlG1", "lab": 38.11, "smartMetrolac": 37.80, "glassMetrolac": 38 },
+    { "id": "GLG2", "lab": 37.16, "smartMetrolac": 37.00, "glassMetrolac": 38 },
+    { "id": "MT1",  "lab": 30.74, "smartMetrolac": 30.83, "glassMetrolac": 30 },
+    { "id": "MT2",  "lab": 38.33, "smartMetrolac": 36.23, "glassMetrolac": 38 },
+    { "id": "MT3",  "lab": 32.25, "smartMetrolac": 31.17, "glassMetrolac": 40 }
+  ],
+  "smartMetrolac": { "meanError": 0.74, "maxError": 2.10 },
+  "glassMetrolac": { "meanError": 1.53, "maxError": 7.75 }
+}

@@ -16,15 +16,15 @@ const FarmerDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="w-full max-w-md md:max-w-2xl mx-auto h-screen bg-slate-50 flex flex-col items-center justify-center">
+      <div className="w-full max-w-sm md:max-w-md mx-auto min-h-screen bg-transparent flex flex-col items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mb-4"></div>
       </div>
     );
   }
 
   return (
-    // Responsive wrapper: full width, but caps at medium/large sizes for desktop look
-    <div className="w-full max-w-md md:max-w-2xl lg:max-w-3xl mx-auto h-screen bg-slate-100 shadow-2xl flex flex-col font-sans overflow-hidden">
+    // Responsive wrapper: narrow (phone-like) width with long scrollable length
+    <div className="w-full max-w-sm md:max-w-md mx-auto min-h-screen bg-transparent shadow-2xl flex flex-col font-sans">
       
       {/* 1. Header (Stays at the top) */}
       <header className="bg-emerald-600 text-white p-6 rounded-b-3xl shadow-md flex-none">
@@ -53,7 +53,7 @@ const FarmerDashboard = () => {
             const hasWarning = hasPhWarning || hasTdsWarning;
 
             return (
-              <div key={invoice.I_ID} className={`bg-white p-4 rounded-2xl shadow-sm border-l-4 ${hasWarning ? 'border-amber-500' : 'border-emerald-500'}`}>
+              <div key={invoice.I_ID} className={`bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border-l-4 ${hasWarning ? 'border-amber-500' : 'border-emerald-500'}`}>
                 <div className="flex justify-between mb-2">
                   <p className="text-sm font-bold text-slate-800">{invoice.Date}</p>
                   <p className="text-sm font-bold text-emerald-600">Rs. {invoice.Total_Amount.toLocaleString()}</p>
@@ -78,7 +78,7 @@ const FarmerDashboard = () => {
       </main>
 
       {/* 3. Bottom Nav */}
-      <nav className="flex-none bg-white border-t border-slate-200 flex justify-around p-3 shadow-lg">
+      <nav className="flex-none bg-white/60 backdrop-blur-sm border-t border-slate-200/20 flex justify-around p-3 shadow-lg">
         <Link to="/farmer/dashboard" className={`flex flex-col items-center ${location.pathname === '/farmer/dashboard' ? 'text-emerald-600' : 'text-slate-400'}`}>
           <span className="text-[10px] font-bold">Home</span>
         </Link>

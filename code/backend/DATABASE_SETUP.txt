@@ -248,6 +248,6 @@ To smoke-test relationships (example):
   -- Should return 0 rows initially, but run without errors:
   SELECT *
   FROM invoice i
-  JOIN farmer f ON i.f_id = f.f_id
-  JOIN collection_center cc ON i.cc_id = cc.cc_id;
+  JOIN farmer f ON i.farmer_id = f.farmer_id
+  JOIN collection_center cc ON i.collection_center_id = cc.collection_center_id;
 
