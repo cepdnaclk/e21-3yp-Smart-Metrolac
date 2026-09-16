@@ -3,7 +3,6 @@
 
 > **3rd Year Engineering Project · Group 16 · Department of Computer Engineering · University of Peradeniya**
 
-[![Milestone](https://img.shields.io/badge/Milestone-2%20%E2%80%94%20Complete-1db954?style=flat-square)](.)
 [![Backend](https://img.shields.io/badge/Backend-100%25%20Complete-1db954?style=flat-square)](.)
 [![Firmware](https://img.shields.io/badge/Firmware-100%25%20Complete-1db954?style=flat-square)](.)
 [![Frontend](https://img.shields.io/badge/Frontend-100%25%20Complete-1db954?style=flat-square)](.)
